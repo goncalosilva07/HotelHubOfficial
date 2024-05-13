@@ -1,0 +1,2 @@
+001|Criar Reserva|Possibilta o utilizador a criar uma reserva
+002|Criar Funcionário|Possibilta o utilizador criar um funcionário
