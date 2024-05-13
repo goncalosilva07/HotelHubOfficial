@@ -39,7 +39,7 @@
             <img src="/static/images/HotelHubLogo.png" style="width: 50vh;">
         </div>
 
-        <div class="col-md-6" style="margin-top: 14vh;">
+        <div class="col-md-6" style="margin-top: 6vh;">
             <img src="/static/images/name.png" style="width: 100px; margin-left: 20vh; margin-top: 10vh;">
             <div class="form-group" style="margin-left: 20vh; margin-right: 20vh; margin-top: 1vh;">
                 <input type="text" class="form-control" id="userNameInput"
@@ -52,15 +52,21 @@
                     style="height: 8vh; border-top-color: #C8AB37; border-top-width: 0.6vh; border-radius: 8px; background-color: white !important; font-size:33px; text-align: center;">
             </div>
 
+            <img src="/static/images/repeatPassword.png" style="width: 320px; margin-left: 20vh; margin-top: 5vh;">
+            <div class="form-group" style="margin-left: 20vh; margin-right: 20vh; margin-top: 1vh;">
+                <input type="password" class="form-control" id="repeatPasswordInput"
+                       style="height: 8vh; border-top-color: #C8AB37; border-top-width: 0.6vh; border-radius: 8px; background-color: white !important; font-size:33px; text-align: center;">
+            </div>
+
             <!--<button style="width: 58%; margin-left: 20vh; margin-right: 20vh; height: 8vh; background-color: #C8AB37;"><img src="login.png" style="width: 10vh;"></button>
             -->
             <div class="form-group" style="margin-left: 20vh; margin-right: 20vh; margin-top: 8vh;">
-                <button type="button" class="form-control" id="loginBtn"
+                <button type="button" class="form-control" id="registerBtn"
                     style="height: 8vh; border-color: #C8AB37; border-radius: 8px; background-color: #C8AB37 !important;">
-                    <img src="/static/images/login.png" style="width: 12vh; margin-top: 0.6vh;">
+                    <img src="/static/images/register.png" style="width: 19vh; margin-top: 0.6vh;">
                 </button>   
                 <div style="text-align: right; margin-top: 1.5vh;">
-                    <a href="/register"><img src="../static/images/registerBtn.png" style="width: 25vh; margin-top: 0.6vh;"></a>
+                    <a href="/"><img src="../static/images/goToLogin.png" style="width: 25vh; margin-top: 0.6vh;"></a>
                 </div>      
             </div>
     </div>
@@ -72,37 +78,38 @@
 
 <script>
 
-    function login() {
-
+    function register() {
+        debugger;
         var obj = {
             userName: $("#userNameInput").val(),
-            password: $("#passwordInput").val()
+            password: $("#passwordInput").val(),
+            repeatpassword: $("#repeatPasswordInput").val()
         };
 
-        $.ajax({
-            url: "http://127.0.0.1:8080/login",
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(obj),
-            success: function (data) {
+        if(obj.userName != "" && obj.password != "" && (obj.password == obj.repeatpassword)){
+            $.ajax({
+                url: "http://127.0.0.1:8080/registerBtn",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    var url = "/";
+                    window.location.href = url;
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }else{
+            alert("Dados Incorretos!")
+        }
 
-                localStorage.setItem("id", data.id);
-                localStorage.setItem("userName", data.userName);
-                localStorage.setItem("enc", data.enc);
-                debugger;
-                var url = "/contentHub";
-                window.location.href = url;
-            },
-            error: function (data) {
-                alert(data.responseText);
-            }
-        });
     }
 
     $(document).ready(function () {
 
-        $("#loginBtn").on("click", function (e) {
-            login();
+        $("#registerBtn").on("click", function (e) {
+            register();
         });
 
     });

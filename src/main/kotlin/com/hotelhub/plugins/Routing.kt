@@ -1,5 +1,6 @@
 package com.hotelhub.plugins
 
+import Cliente
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -22,6 +23,23 @@ fun Application.configureRouting() {
 
         get("/") {
             call.respondFile(File("pages/login.html"))
+        }
+
+        get("/register") {
+            call.respondFile(File("pages/register.html"))
+        }
+
+        get("/registerBtn") {
+            @Serializable
+            data class RegisterInfo(val userName: String, val password: String, val repeatPassword: String)
+
+            val jsonData = call.receive<String>()
+            println("JSON Received: $jsonData")
+            val registerData = Json.decodeFromString<RegisterInfo>(jsonData)
+            println(registerData)
+
+            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, "", "", "", 0)
+            cliente.register()
         }
 
         post("/login") {
