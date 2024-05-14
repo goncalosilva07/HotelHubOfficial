@@ -2,3 +2,4 @@ NRUQ|teste|teste|teste|teste|teste|910000000|true
 WKJY|teste2|teste|teste|teste|teste|910000000|true
 IPQN|a|a|a|a|a|910000000|false
 PPRI|teste3|teste3|teste|teste|teste|910000000|true
+IHDR|goncalo|12345|null|null|null|null|true

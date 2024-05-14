@@ -29,7 +29,7 @@ fun Application.configureRouting() {
             call.respondFile(File("pages/register.html"))
         }
 
-        get("/registerBtn") {
+        post("/registerFun") {
             @Serializable
             data class RegisterInfo(val userName: String, val password: String, val repeatPassword: String)
 
@@ -38,8 +38,10 @@ fun Application.configureRouting() {
             val registerData = Json.decodeFromString<RegisterInfo>(jsonData)
             println(registerData)
 
-            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, "", "", "", 0)
-            cliente.register()
+            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, null, null, null, null)
+            val responseCreateClient: Pair<Boolean, String> = cliente.register()
+
+            call.respondText("Conta criada com sucesso!", status = HttpStatusCode.Created)
         }
 
         post("/login") {
@@ -61,6 +63,10 @@ fun Application.configureRouting() {
             }else{
                 call.respondText((responseData.second as String), status = HttpStatusCode.Unauthorized)
             }
+        }
+
+        get("/contentHub") {
+            call.respondFile(File("pages/contentHub.html"))
         }
 
     }

@@ -4,14 +4,14 @@ import kotlin.random.Random
 abstract class Pessoa (var id: String,
                        var userName: String,
                        var password: String,
-                       var nome: String,
-                       var apelido: String,
-                       var email: String,
-                       var telefone: Int,
+                       var nome: String?,
+                       var apelido: String?,
+                       var email: String?,
+                       var telefone: Int?,
                        var isClient: Boolean) {
 
 
-    abstract fun register()
+    abstract fun register(): Pair<Boolean, String>
 
     fun generateCode(file: String){
         val alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -57,7 +57,7 @@ abstract class Pessoa (var id: String,
         }
 
         if (erro)
-            return false to "Nome em utilização!"
+            return false to "Nome de utilizador já em utilização!"
         else
             return true to "Ok"
 

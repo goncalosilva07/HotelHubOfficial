@@ -5,18 +5,17 @@ class Cliente (
     id: String,
     userName: String,
     password: String,
-    nome: String,
-    apelido: String,
-    email: String,
-    telefone: Int):Pessoa(id, userName, password,nome, apelido, email, telefone, isClient = true)
+    nome: String?,
+    apelido: String?,
+    email: String?,
+    telefone: Int?):Pessoa(id, userName, password,nome, apelido, email, telefone, isClient = true)
 {
 
-    override fun register() {
+    override fun register(): Pair<Boolean, String> {
 
         val fileUser = "users.txt"
         val filePermissions = "permissoes_utilizador.txt"
-        if ((userName != "") && (password != "") && (nome != "")
-            && (apelido != "") && (email != "") && (telefone.toString().length >= 9)){
+        if ((userName != "") && (password != "")){
 
             generateCode("users.txt")
 
@@ -28,10 +27,13 @@ class Cliente (
                 val filePermissions = File("db/$filePermissions")
                 filePermissions.appendText("$id|001\n")
 
+                return Pair(true, responseName.second)
             }else
-                println(responseName.second)
+                return Pair(false, responseName.second)
         }else
-            println("Dados Inválidos!")
+            return Pair(false, "Dados Inválidos!")
+
+        return Pair(false, "Erro! Tente novamente mais tarde.")
     }
 
 }

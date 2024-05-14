@@ -17,7 +17,7 @@ class Employee (var nif: String,
                 telefone: Int):Pessoa(id, userName, password, nome, apelido, email, telefone, isClient = false)
 {
 
-    override fun register() {
+    override fun register(): Pair<Boolean, String> {
 
         val fileUser = "users.txt"
         val fileEmployee = "funcionarios.txt"
@@ -40,6 +40,8 @@ class Employee (var nif: String,
                 println(responseName.second)
         }else
             println("Dados Inválidos!")
+
+        return Pair(false, "Erro")
     }
 
 }

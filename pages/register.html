@@ -83,20 +83,22 @@
         var obj = {
             userName: $("#userNameInput").val(),
             password: $("#passwordInput").val(),
-            repeatpassword: $("#repeatPasswordInput").val()
+            repeatPassword: $("#repeatPasswordInput").val()
         };
 
-        if(obj.userName != "" && obj.password != "" && (obj.password == obj.repeatpassword)){
+        if(obj.userName != "" && obj.password != "" && (obj.password == obj.repeatPassword)){
             $.ajax({
-                url: "http://127.0.0.1:8080/registerBtn",
+                url: "http://127.0.0.1:8080/registerFun",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(obj),
                 success: function (data) {
+                    debugger;
                     var url = "/";
                     window.location.href = url;
                 },
                 error: function (data) {
+                    debugger;
                     alert(data.responseText);
                 }
             });
