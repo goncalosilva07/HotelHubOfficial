@@ -22,6 +22,7 @@ fun Application.configureRouting() {
             resources("static")
         }
 
+        /* ************************** PAGES ************************** */
         get("/") {
             call.respondFile(File("pages/login.html"))
         }
@@ -30,6 +31,11 @@ fun Application.configureRouting() {
             call.respondFile(File("pages/register.html"))
         }
 
+        get("/contentHub") {
+            call.respondFile(File("pages/contentHub.html"))
+        }
+
+        /* ************************** METHODS ************************** */
         post("/registerFun") {
             @Serializable
             data class RegisterInfo(val userName: String, val password: String, val repeatPassword: String)
@@ -39,10 +45,14 @@ fun Application.configureRouting() {
             val registerData = Json.decodeFromString<RegisterInfo>(jsonData)
             println(registerData)
 
-            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, null, null, null, null)
+            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, null, null, null, null, mutableListOf())
             val responseCreateClient: Pair<Boolean, String> = cliente.register()
 
-            call.respondText("Conta criada com sucesso!", status = HttpStatusCode.Created)
+            if (responseCreateClient.first){
+                call.respondText("Conta criada com sucesso!", status = HttpStatusCode.Created)
+            }else{
+                call.respondText(responseCreateClient.second, status = HttpStatusCode.NotAcceptable)
+            }
         }
 
         post("/login") {
@@ -58,7 +68,7 @@ fun Application.configureRouting() {
             val responseData2 = Pessoa.login(loginData.userName, loginData.password)
             if (responseData.first){
 
-                val receiveData: LoginData = LoginData((responseData.second as LoginData).id, (responseData.second as LoginData).userName, (responseData.second as LoginData).enc)
+                val receiveData: DTO_LoginData = DTO_LoginData((responseData.second as DTO_LoginData).id, (responseData.second as DTO_LoginData).userName, (responseData.second as DTO_LoginData).enc)
 
                 val json = Json.encodeToString(receiveData)
                 call.respondText(json, ContentType.Application.Json)
@@ -67,8 +77,31 @@ fun Application.configureRouting() {
             }
         }
 
-        get("/contentHub") {
-            call.respondFile(File("pages/contentHub.html"))
+        post("/getUserInitialData") {
+            val jsonData = call.receive<String>()
+            val loginData = Json.decodeFromString<DTO_LoginData>(jsonData)
+
+            val responseData = Pessoa.getUserData(loginData.id, loginData.userName, loginData.enc)
+
+            if (responseData.first){
+
+                val cliente: DTO_Cliente = DTO_Cliente(
+                    (responseData.second as Cliente).id,
+                    (responseData.second as Cliente).userName,
+                    (responseData.second as Cliente).password,
+                    (responseData.second as Cliente).nome,
+                    (responseData.second as Cliente).apelido,
+                    (responseData.second as Cliente).email,
+                    (responseData.second as Cliente).telefone,
+                    (responseData.second as Cliente).permissoes
+                )
+
+                val json = Json.encodeToString(cliente)
+                call.respondText(json, ContentType.Application.Json)
+
+            }else{
+                call.respondText((responseData.second as String), status = HttpStatusCode.NotFound)
+            }
         }
 
     }

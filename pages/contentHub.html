@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
-        UA Meal
+        HotelHub
     </title>
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
@@ -49,7 +49,7 @@
     </div>
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav userPermissionsActivities">
             <li class="nav-item">
                 <a class="nav-link homeBtn active">
                     <div
@@ -59,18 +59,7 @@
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link ticketBtn">
-                    <div
-                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-              <span class="material-symbols-rounded"
-                    style="font-size: 20px; font-weight: 300; color: #5e72e4 !important;">
-                lunch_dining
-              </span>
-                    </div>
-                    <span class="nav-link-text ms-1">Senhas</span>
-                </a>
-            </li>
+
 
         </ul>
     </div>
@@ -119,7 +108,7 @@
 <script>
 
     var contentHub = {
-        mecNumber: null,
+        id: null,
         name: null,
         enc: null,
         userInfo: null,
@@ -147,16 +136,18 @@
                     userName: contentHub.userName,
                     enc: contentHub.enc
                 };
-                /*
+
                 $.ajax({
                     url: "http://127.0.0.1:8080/getUserInitialData",
                     type: "POST",
                     contentType: "application/json",
                     data: JSON.stringify(obj),
                     success: function (data) {
-                        contentHub.userInfo = data.user;
+                        debugger;
+                        contentHub.userInfo = data;
 
-                        $(".userNameDisplay").html(contentHub.userInfo.name);
+                        $(".userNameDisplay").html(contentHub.userInfo.userName);
+                        /*
                         $(".userCourseDisplay").html(contentHub.userInfo.course);
                         $(".userBalance").html(contentHub.userInfo.balance + "€");
 
@@ -176,6 +167,8 @@
                             $(".meteorologyCity").html(city);
                             $(".meteorologyIcon").html("<img src='" + icon + "'>");
                         });
+                        */
+
 
                     },
                     error: function () {
@@ -184,7 +177,7 @@
                         window.location.href = url;
                     }
                 });
-            */
+
             } else {
                 alert("Problema de autenticação! Efetue a autenticação novamente.")
                 var url = "/";

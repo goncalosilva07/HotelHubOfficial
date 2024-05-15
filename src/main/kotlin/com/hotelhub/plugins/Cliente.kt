@@ -1,5 +1,4 @@
 import java.io.File
-//import java.io.FileWriter
 
 class Cliente (
     id: String,
@@ -8,7 +7,8 @@ class Cliente (
     nome: String?,
     apelido: String?,
     email: String?,
-    telefone: Int?):Pessoa(id, userName, password,nome, apelido, email, telefone, isClient = true)
+    telefone: String?,
+    permissoes: MutableList<Permissao>): Pessoa(id, userName, password, nome, apelido, email, telefone, permissoes, isClient=true)
 {
 
     override fun register(): Pair<Boolean, String> {
@@ -26,6 +26,7 @@ class Cliente (
 
                 val filePermissions = File("db/$filePermissions")
                 filePermissions.appendText("$id|001\n")
+                filePermissions.appendText("$id|002\n")
 
                 return Pair(true, responseName.second)
             }else

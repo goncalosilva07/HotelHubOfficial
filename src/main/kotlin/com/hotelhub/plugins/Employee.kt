@@ -1,20 +1,20 @@
 import java.io.File
 import java.util.*
 
-class Employee (var nif: String,
-                var dataDeNascimento: Date,
-                var genero: String,
-                var salario: Double,
-                var cargo: String,
-                var horario: List<Horario>,
-                var permissoes: List<Permissao>,
-                id: String,
+class Employee (id: String,
                 userName: String,
                 password: String,
                 nome: String,
                 apelido: String,
                 email: String,
-                telefone: Int):Pessoa(id, userName, password, nome, apelido, email, telefone, isClient = false)
+                telefone: String,
+                permissoes: MutableList<Permissao>,
+                var nif: String,
+                var dataDeNascimento: Date,
+                var genero: String,
+                var salario: Double,
+                var cargo: String,
+                var horario: List<Horario>):Pessoa(id, userName, password, nome, apelido, email, telefone, permissoes, isClient = false)
 {
 
     override fun register(): Pair<Boolean, String> {

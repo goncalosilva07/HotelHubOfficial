@@ -1,17 +1,20 @@
-import com.hotelhub.plugins.LoginData
+import com.hotelhub.plugins.DTO_LoginData
 import java.io.File
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.random.Random
 
-abstract class Pessoa (var id: String,
-                       var userName: String,
-                       var password: String,
-                       var nome: String?,
-                       var apelido: String?,
-                       var email: String?,
-                       var telefone: Int?,
-                       var isClient: Boolean) {
-
+abstract class Pessoa(
+    var id: String,
+    var userName: String,
+    var password: String,
+    var nome: String?,
+    var apelido: String?,
+    var email: String?,
+    var telefone: String?,
+    var permissoes: MutableList<Permissao>,
+    var isClient: Boolean) {
 
     abstract fun register(): Pair<Boolean, String>
 
@@ -80,7 +83,7 @@ abstract class Pessoa (var id: String,
                         val sha256Digest = MessageDigest.getInstance("SHA-256").digest(message.toByteArray())
                         val enc = sha256Digest.joinToString("") { "%02x".format(it) }
 
-                        val returnData: LoginData = LoginData(userSplit[0], userSplit[1], enc)
+                        val returnData: DTO_LoginData = DTO_LoginData(userSplit[0], userSplit[1], enc)
 
                         return Pair(true, returnData)
                     }
@@ -89,6 +92,84 @@ abstract class Pessoa (var id: String,
                 return Pair(false, "Insira todos os dados!")
             }
             return Pair(false, "Dados Incorretos!")
+        }
+
+        fun getUserData(id: String, userName: String, enc: String): Pair<Boolean, Any>{
+            val fileUserDB = "users.txt"
+            val fileUser = File("db/$fileUserDB")
+
+            for (userData in fileUser.readLines()) {
+                val userSplit = userData.split("|");
+
+                if (id == userSplit[0] && userName == userSplit[1]) {
+                    if (userSplit[7].toBoolean() == true){
+                        val permissionsList: MutableList<Permissao> = getUserPermissions(userSplit[0])
+
+                        val client: Cliente = Cliente(userSplit[0], userSplit[1],userSplit[2],userSplit[3],userSplit[4],userSplit[5],userSplit[6],permissionsList)
+
+                        val recognizeUser = recognizeUser(id, userName, enc)
+
+                        if (recognizeUser.first == false){
+                            return Pair(false, recognizeUser.second)
+                        }
+
+                        return Pair(true, client)
+                    }else {
+                        val permissionsList: MutableList<Permissao> = getUserPermissions(userSplit[0])
+                        val fileEmployeeDB = "funcionarios.txt"
+                        val fileEmployee = File("db/$fileEmployeeDB")
+                        var employeeInfo: MutableList<String> = mutableListOf()
+                        for (employeeData in fileEmployee.readLines()) {
+                            val employeeSplit = employeeData.split("|");
+                            if (employeeSplit[0] == userSplit[0]){
+                                employeeInfo.addAll(employeeSplit)
+                            }
+                        }
+
+                        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+                        val dataDeNascimento: Date = dateFormat.parse(employeeInfo[2])
+                        /*ADICIONAR HORARIO*/
+                        val employee: Employee = Employee(userSplit[0],userSplit[1],userSplit[2],userSplit[3],userSplit[4],userSplit[5],userSplit[6],
+                            permissionsList, employeeInfo[1], dataDeNascimento, employeeInfo[3], employeeInfo[4].toDouble(), employeeInfo[5], mutableListOf())
+
+                        val recognizeUser = recognizeUser(id, userName, enc)
+
+                        if (recognizeUser.first == false){
+                            return Pair(false, recognizeUser.second)
+                        }
+
+                        return Pair(true, employee)
+                    }
+                }
+            }
+            return Pair(false, "Erro! Utilizador não encontrado.")
+        }
+
+        fun getUserPermissions(idUser: String): MutableList<Permissao>{
+            val filePermissionsDB = "permissoes_utilizador.txt"
+            val filePermissions = File("db/$filePermissionsDB")
+
+            var permissionsList: MutableList<Permissao> = mutableListOf()
+
+            for (permission in filePermissions.readLines()) {
+                val permissionSplit = permission.split("|");
+                if (permissionSplit[0] == idUser){
+                    permissionsList.add(Permissao(permissionSplit[1].toInt(), "", ""))
+                }
+            }
+            return permissionsList
+        }
+
+        fun recognizeUser(id:String, userName: String, enc: String): Pair<Boolean, String>{
+            val message = "${id}_${userName}"
+            val sha256Digest = MessageDigest.getInstance("SHA-256").digest(message.toByteArray())
+            val encNew = sha256Digest.joinToString("") { "%02x".format(it) }
+
+            if (enc != encNew){
+                return Pair(false, "Erro! Utilizador não reconhecido.")
+            }else{
+                return Pair(true, "Ok")
+            }
         }
     }
 

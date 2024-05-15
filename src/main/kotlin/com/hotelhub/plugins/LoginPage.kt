@@ -1,6 +1,5 @@
 package com.hotelhub.plugins
 
-import kotlinx.serialization.Serializable
 import java.io.File
 import java.security.MessageDigest
 
@@ -19,7 +18,7 @@ class LoginPage {
                     val sha256Digest = MessageDigest.getInstance("SHA-256").digest(message.toByteArray())
                     val enc = sha256Digest.joinToString("") { "%02x".format(it) }
 
-                    val returnData: LoginData = LoginData(userSplit[0], userSplit[1], enc)
+                    val returnData: DTO_LoginData = DTO_LoginData(userSplit[0], userSplit[1], enc)
 
                     return Pair(true, returnData)
                 }

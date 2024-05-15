@@ -1,2 +1,3 @@
-001|Criar Reserva|Possibilta o utilizador a criar uma reserva
-002|Criar Funcionário|Possibilta o utilizador criar um funcionário
+001|Criar Reserva|Possibilita o utilizador a criar uma reserva
+002|Pedir Serviço de Quarto|Possibilita o utilizador de fazer pedidos de serviço de quarto
+003|Criar Funcionário|Possibilta o utilizador criar um funcionário
