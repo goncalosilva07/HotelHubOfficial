@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UA Meal</title>
+    <title>HotelHub</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -85,8 +85,8 @@
             password: $("#passwordInput").val(),
             repeatPassword: $("#repeatPasswordInput").val()
         };
-
-        if(obj.userName != "" && obj.password != "" && (obj.password == obj.repeatPassword)){
+        debugger;
+        if(obj.userName != "" && obj.password != "" && (obj.password == obj.repeatPassword) && obj.password.length > 5){
             $.ajax({
                 url: "http://127.0.0.1:8080/registerFun",
                 type: "POST",
@@ -103,7 +103,7 @@
                 }
             });
         }else{
-            alert("Dados Incorretos!")
+            alert("Campos indevidamente preenchidos!")
         }
 
     }

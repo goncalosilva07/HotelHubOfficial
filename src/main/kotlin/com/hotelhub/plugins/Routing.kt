@@ -1,6 +1,7 @@
 package com.hotelhub.plugins
 
 import Cliente
+import Pessoa
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -54,6 +55,7 @@ fun Application.configureRouting() {
             println(loginData)
 
             val responseData = LoginPage().login(loginData.userName, loginData.password)
+            val responseData2 = Pessoa.login(loginData.userName, loginData.password)
             if (responseData.first){
 
                 val receiveData: LoginData = LoginData((responseData.second as LoginData).id, (responseData.second as LoginData).userName, (responseData.second as LoginData).enc)
