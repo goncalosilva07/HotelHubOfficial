@@ -1,6 +1,7 @@
 package com.hotelhub.plugins
 
 import Cliente
+import Permissao
 import Pessoa
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -13,6 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
+import java.security.Permissions
 
 fun Application.configureRouting() {
     routing {
@@ -21,6 +23,13 @@ fun Application.configureRouting() {
         static("/static") {
             resources("static")
         }
+
+        /* ************************** DATA CLASS ************************** */
+        @Serializable
+        data class RegisterInfo(val userName: String, val password: String, val repeatPassword: String)
+
+        @Serializable
+        data class LoginInfo(val userName: String, val password: String)
 
         /* ************************** PAGES ************************** */
         get("/") {
@@ -35,10 +44,16 @@ fun Application.configureRouting() {
             call.respondFile(File("pages/contentHub.html"))
         }
 
+        get("/dashboard") {
+            call.respondFile(File("pages/dashboard.html"))
+        }
+
+        get("/reserve") {
+            call.respondFile(File("pages/reserve.html"))
+        }
+
         /* ************************** METHODS ************************** */
         post("/registerFun") {
-            @Serializable
-            data class RegisterInfo(val userName: String, val password: String, val repeatPassword: String)
 
             val jsonData = call.receive<String>()
             println("JSON Received: $jsonData")
@@ -56,16 +71,14 @@ fun Application.configureRouting() {
         }
 
         post("/login") {
-            @Serializable
-            data class LoginInfo(val userName: String, val password: String)
 
             val jsonData = call.receive<String>()
             println("JSON Received: $jsonData")
             val loginData = Json.decodeFromString<LoginInfo>(jsonData)
             println(loginData)
 
-            val responseData = LoginPage().login(loginData.userName, loginData.password)
-            val responseData2 = Pessoa.login(loginData.userName, loginData.password)
+            //val responseData = LoginPage().login(loginData.userName, loginData.password)
+            val responseData = Pessoa.login(loginData.userName, loginData.password)
             if (responseData.first){
 
                 val receiveData: DTO_LoginData = DTO_LoginData((responseData.second as DTO_LoginData).id, (responseData.second as DTO_LoginData).userName, (responseData.second as DTO_LoginData).enc)
@@ -78,6 +91,7 @@ fun Application.configureRouting() {
         }
 
         post("/getUserInitialData") {
+
             val jsonData = call.receive<String>()
             val loginData = Json.decodeFromString<DTO_LoginData>(jsonData)
 
@@ -96,12 +110,23 @@ fun Application.configureRouting() {
                     (responseData.second as Cliente).permissoes
                 )
 
-                val json = Json.encodeToString(cliente)
+                val permissionsList: MutableList<Permissao> = Permissao.getAllPermissions()
+
+                val userInfo: DTO_getUserInitalData = DTO_getUserInitalData(cliente, permissionsList)
+
+                val json = Json.encodeToString(userInfo)
                 call.respondText(json, ContentType.Application.Json)
 
             }else{
                 call.respondText((responseData.second as String), status = HttpStatusCode.NotFound)
             }
+        }
+
+        post("/getReserveInitialData") {
+
+            val jsonData = call.receive<String>()
+            val loginData = Json.decodeFromString<DTO_LoginData>(jsonData)
+
         }
 
     }

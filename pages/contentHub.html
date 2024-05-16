@@ -30,6 +30,8 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
@@ -50,11 +52,10 @@
     <hr class="horizontal dark mt-0">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
         <ul class="navbar-nav userPermissionsActivities">
-            <li class="nav-item">
-                <a class="nav-link homeBtn active">
-                    <div
-                            class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-tv-2 text-primary text-sm opacity-10"></i>
+            <li class="nav-item menuOption" id="0">
+                <a class="nav-link active">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <span class="material-symbols-outlined">dashboard</span>
                     </div>
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
@@ -95,6 +96,53 @@
     <div class="container-fluid py-4">
         <div class="row">
 
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Data</p>
+                                    <h5 class="font-weight-bolder todayDate">
+                                    </h5>
+                                    <p class="mb-0 weekday">
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                    <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <div class="col-8">
+                                <div class="numbers">
+                                    <p class="text-sm mb-0 text-uppercase font-weight-bold">Metereologia</p>
+                                    <h5 class="font-weight-bolder meteorologyTemperature">
+
+                                    </h5>
+                                    <p class="mb-0 meteorologyCity">
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div
+                                        class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle meteorologyIcon">
+                                    <!--<i class="meteorologyIcon text-lg opacity-10" aria-hidden="true"></i>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="contentHubInjection">
@@ -118,7 +166,7 @@
             contentHub.id = localStorage.getItem("id");
             contentHub.userName = localStorage.getItem("userName");
             contentHub.enc = localStorage.getItem("enc");
-            debugger;
+
             moment.updateLocale('pt', {
                 months: [
                     "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
@@ -129,6 +177,7 @@
                     "Sexta-feira", "Sábado"
                 ]
             });
+
 
             if (contentHub.id != null && contentHub.userName != null && contentHub.enc != null) {
                 var obj = {
@@ -143,19 +192,35 @@
                     contentType: "application/json",
                     data: JSON.stringify(obj),
                     success: function (data) {
-                        debugger;
+
                         contentHub.userInfo = data;
 
                         $(".userNameDisplay").html(contentHub.userInfo.userName);
-                        /*
-                        $(".userCourseDisplay").html(contentHub.userInfo.course);
-                        $(".userBalance").html(contentHub.userInfo.balance + "€");
+
+                        var htmlToAppend = ''
+                        $.each(data.permissionsList, function( key, value ) {
+                            debugger;
+                            if(data.client.permissoes.find(x => x.id == value.id)) {
+                                htmlToAppend += '<li class="nav-item menuOption" id=' + value.id + '>\n' +
+                                    '                <a class="nav-link">\n' +
+                                    '                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">\n' +
+                                    '                        <span class="material-symbols-outlined">' + value.icon + '</span>\n' +
+                                    '                    </div>\n' +
+                                    '                    <span class="nav-link-text ms-1">' + value.nome + '</span>\n' +
+                                    '                </a>\n' +
+                                    '            </li>';
+                            }
+                        });
+
+                        $(".userPermissionsActivities").append(htmlToAppend);
+
 
                         $(".todayDate").html(moment().locale('pt').format('DD [de] MMMM [de] YYYY'));
                         $(".weekday").html(moment().locale('pt').format('dddd'));
 
                         var apiKey = 'a35bb5ec05b5921304c3baf20ed9cea6'; // chave de API OpenWeatherMap
                         var cidade = 'Oliveira de Azeméis';
+                        //var cidade = 'Porto';
                         var url = 'https://api.openweathermap.org/data/2.5/weather?q=' + cidade + '&appid=' + apiKey;
 
                         $.getJSON(url, function (data) {
@@ -167,6 +232,10 @@
                             $(".meteorologyCity").html(city);
                             $(".meteorologyIcon").html("<img src='" + icon + "'>");
                         });
+
+                        /*
+                        $(".userCourseDisplay").html(contentHub.userInfo.course);
+                        $(".userBalance").html(contentHub.userInfo.balance + "€");
                         */
 
 
@@ -190,7 +259,7 @@
 
         contentHub.getContentHubInitialData();
 
-        //$(".contentHubInjection").load("/home");
+        $(".contentHubInjection").load("/dashboard");
 
         $(".logoutBtn").on("click", function (e) {
             localStorage.clear();
@@ -198,12 +267,22 @@
             window.location.href = url;
         });
 
-        $(".ticketBtn").on("click", function (e) {
+        $(document).on('click', '.menuOption', function(e) {
             debugger;
-            $(".contentHubInjection").load("/ticket");
-            $(".nav-link.active").removeClass("active");
-            $(".ticketBtn").addClass("active");
-            //$(".").removeClass("myClass noClass").addClass("yourClass");
+            var id = e.target.parentElement.id;
+
+            switch (id){
+                case '0':
+                    $(".contentHubInjection").load("/dashboard");
+                    break;
+                case '1':
+                    $(".contentHubInjection").load("/reserve");
+                    break;
+                case '2':
+                    alert("Click!");
+                    break;
+            }
+
         });
 
         $(".homeBtn").on("click", function (e) {

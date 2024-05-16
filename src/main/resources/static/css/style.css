@@ -54,7 +54,7 @@
     --bs-body-font-weight: 400;
     --bs-body-line-height: 1.5;
     --bs-body-color: #67748e;
-    --bs-body-bg: #fff;
+    --bs-body-bg: #ffffff;
     --bs-border-width: 1px;
     --bs-border-style: solid;
     --bs-border-color: #dee2e6;
@@ -10621,7 +10621,7 @@ fieldset:disabled .btn {
 }
 
 .bg-gray-100 {
-    background-color: #f8f9fa !important;
+    background-color: #e5e5e5 !important;
 }
 
 .bg-gray-200 {

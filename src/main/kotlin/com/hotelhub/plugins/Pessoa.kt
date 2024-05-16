@@ -154,7 +154,7 @@ abstract class Pessoa(
             for (permission in filePermissions.readLines()) {
                 val permissionSplit = permission.split("|");
                 if (permissionSplit[0] == idUser){
-                    permissionsList.add(Permissao(permissionSplit[1].toInt(), "", ""))
+                    permissionsList.add(Permissao(permissionSplit[1].toInt(), "", "", ""))
                 }
             }
             return permissionsList
