@@ -2,8 +2,8 @@
 <html lang="en">
 
 <style>
-    .select2-selection.select2-selection--single {
-        height: 35px;
+    .select2-container .select2-search--inline .select2-search__field {
+        height: 22px;
     }
 </style>
 
@@ -12,7 +12,7 @@
         <div class="card ">
             <div class="card-header pb-0 p-3">
                 <div class="d-flex justify-content-between">
-                    <h6 class="mb-2">Senhas</h6>
+                    <h6 class="mb-2">Reserva</h6>
                 </div>
             </div>
             <div class="card-body">
@@ -21,36 +21,33 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Dia Inicial</label>
-                            <input class="form-control" type="date">
+                            <input class="form-control startDate" type="date">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Dia Final</label>
-                            <input class="form-control" type="date">
+                            <input class="form-control endDate" type="date">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Nº Pessoas</label>
-                            <input class="form-control" type="number">
+                            <input class="form-control numberPeople" type="number">
                         </div>
                     </div>
 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Tipo Quarto</label>
-                            <select class="form-control dropdown_meal" style="height: 35px"></select>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label class="form-control-label">Serviços Adicionais</label>
-                            <select class="form-control dropdown_meal" style="height: 35px"></select>
+                            <select class="form-control additionalServices" multiple style=""></select>
                         </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" class="button-3 searchRoomBtn">Pesquisar</button>
                     </div>
 
                 </div>
@@ -64,6 +61,7 @@
 <script>
 
     var reserve = {
+        roomFeatures: null,
 
         getReserveInitialData: function () {
 
@@ -71,10 +69,23 @@
                 url: "http://127.0.0.1:8080/getReserveInitialData",
                 type: "POST",
                 contentType: "application/json",
-                data: JSON.stringify(obj),
+                data: null,
                 success: function (data) {
+                    debugger;
+                    reserve.roomFeatures = data.roomFeatures;
 
+                    //var dataSelect2 = [];
+                    //dataSelect2.push({id:-1, text: "Selecione um serviço",selected: true});
+                    var dataSelect2 = $.map(data.roomFeatures, function (obj) {
+                        obj.text = obj.nome;
+                        return obj;
+                    });
 
+                    $('.additionalServices').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione um serviço",
+                        allowClear: true,
+                        data: dataSelect2
+                    });
                 },
                 error: function (data) {
                     alert(data.responseText);
@@ -85,10 +96,52 @@
 
     $(document).ready(function () {
 
-        $('.dropdown_meal').select2({
-            selectOnClose: true,
-        });
+        reserve.getReserveInitialData();
+        debugger;
 
+        $(".searchRoomBtn").on("click", function (e) {
+            debugger;
+            var startDateString = $(".startDate").val() == "" ? null : $(".startDate").val();
+            var endDateString = $(".endDate").val() == "" ? null : $(".endDate").val();
+            var numberOfPeople = $(".numberPeople").val() == "" || parseInt($(".numberPeople").val()) <= 0 ? null : parseInt($(".numberPeople").val());
+
+            var additionalServices = $(".additionalServices").val();
+            additionalServices = additionalServices.filter(x => x != "");
+
+            $.each(additionalServices, function(index, value){
+                additionalServices[index] = {id: parseInt(value), nome: ""}
+            });
+
+            var startDate = moment(startDateString, "YYYY-MM-DD").toDate();
+            var endDate = moment(endDateString, "YYYY-MM-DD").toDate();
+            debugger;
+            var dateNow = moment(moment().format('YYYY-MM-DD')).toDate();
+            if (startDateString != null && endDateString != null && startDate < endDate && startDate > dateNow && endDate > dateNow
+            && numberOfPeople != null){
+
+                var obj = {
+                    startDate: startDate,
+                    endDate: endDate,
+                    numberOfPeople: numberOfPeople,
+                    additionalServices: additionalServices
+                }
+
+                $.ajax({
+                    url: "http://127.0.0.1:8080/getRoomsForReserve",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+
+            }
+
+        });
     });
 
 </script>

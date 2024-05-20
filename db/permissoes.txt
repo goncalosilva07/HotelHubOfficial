@@ -1,3 +1,3 @@
-001|Criar Reserva|Possibilita o utilizador a criar uma reserva|book
-002|Pedir Serviço de Quarto|Possibilita o utilizador de fazer pedidos de serviço de quarto|room_service
-003|Criar Funcionário|Possibilta o utilizador criar um funcionário|person_add
+1|Criar Reserva|Possibilita o utilizador a criar uma reserva|book
+2|Pedir Serviço de Quarto|Possibilita o utilizador de fazer pedidos de serviço de quarto|room_service
+3|Criar Funcionário|Possibilta o utilizador criar um funcionário|person_add

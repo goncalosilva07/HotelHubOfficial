@@ -1,5 +1,4 @@
-class Quarto(var id: Int, var numero: Int,
-             var tipoQuarto: String,
+class Quarto(var numero: Int,
              var preco: Double,
              var capacidade: Int,
              var caracteristicas: List<CaracteristicaQuarto>,

@@ -1,0 +1,10 @@
+1|Wi-Fi
+2|Ar condicionado
+3|Televisão a cabo
+4|Mini-bar
+5|Cofre
+6|Secador de cabelo
+7|Mesa de trabalho
+8|Serviço de quarto
+9|Vista para o mar
+10|Banheira

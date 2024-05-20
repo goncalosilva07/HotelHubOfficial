@@ -1,5 +1,6 @@
 package com.hotelhub.plugins
 
+import CaracteristicaQuarto
 import Cliente
 import Permissao
 import Pessoa
@@ -9,12 +10,12 @@ import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.datetime.LocalDateTime
 import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
-import java.security.Permissions
 
 fun Application.configureRouting() {
     routing {
@@ -30,6 +31,12 @@ fun Application.configureRouting() {
 
         @Serializable
         data class LoginInfo(val userName: String, val password: String)
+
+        @Serializable
+        data class DTO_ReserveInitialData(val roomFeatures: MutableList<CaracteristicaQuarto>)
+
+        @Serializable
+        data class DTO_DataSerchRoomsForReserve(val startDate: LocalDateTime, val endDate: LocalDateTime, val numberOfPeople: Int, val additionalServices: MutableList<CaracteristicaQuarto>)
 
         /* ************************** PAGES ************************** */
         get("/") {
@@ -123,10 +130,26 @@ fun Application.configureRouting() {
         }
 
         post("/getReserveInitialData") {
+            try {
+                val roomFeatures = CaracteristicaQuarto.getRoomFeatures()
+                val responseData = DTO_ReserveInitialData(roomFeatures)
 
-            val jsonData = call.receive<String>()
-            val loginData = Json.decodeFromString<DTO_LoginData>(jsonData)
+                val json = Json.encodeToString(responseData)
+                call.respondText(json, ContentType.Application.Json)
 
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getRoomsForReserve") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_DataSerchRoomsForReserve>(jsonData)
+                print(data)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
         }
 
     }
