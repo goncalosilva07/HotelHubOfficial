@@ -1,147 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<style>
-    .select2-container .select2-search--inline .select2-search__field {
-        height: 22px;
-    }
-</style>
-
-<div class="row mt-4">
-    <div class="col-lg-12 mb-lg-0 mb-4">
-        <div class="card ">
-            <div class="card-header pb-0 p-3">
-                <div class="d-flex justify-content-between">
-                    <h6 class="mb-2">Reserva</h6>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="row mt-4">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Reserva</h6>
+                    </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Dia Inicial</label>
-                            <input class="form-control startDate" type="date">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-control-label">Nome</label>
+                                <input class="form-control name" type="text" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Dia Final</label>
-                            <input class="form-control endDate" type="date">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-control-label">Apelido</label>
+                                <input class="form-control surname" type="text" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Nº Pessoas</label>
-                            <input class="form-control numberPeople" type="number">
+                        <div class="col-md-4"></div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-control-label">Email</label>
+                                <input class="form-control email" type="email" required>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="form-control-label">Serviços Adicionais</label>
-                            <select class="form-control additionalServices" multiple style=""></select>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="form-control-label">Telemóvel</label>
+                                <input class="form-control phoneNumber" type="number" required>
+                            </div>
                         </div>
-                    </div>
+                        <div class="col-md-4"></div>
 
-                    <div class="col-md-3">
-                        <button type="button" class="button-3 searchRoomBtn">Pesquisar</button>
-                    </div>
+                        <div class="col-md-3">
+                            <button type="button" class="button-3 reserveBtn">Fazer Reserva</button>
+                        </div>
 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
+</body>
 </html>
 
 <script>
-
     var reserve = {
-        roomFeatures: null,
+        idRoom: null,
+        startDate: null,
+        endDate: null,
 
-        getReserveInitialData: function () {
+        getReserveInitialData: function (){
+            reserve.idRoom = localStorage.getItem("idRoom");
+            reserve.startDate = localStorage.getItem("startDate");
+            reserve.endDate = localStorage.getItem("endDate");
+
+            localStorage.removeItem("idRoom");
+            localStorage.removeItem("startDate");
+            localStorage.removeItem("endDate");
+
+            $(".name").val(contentHub.userInfo.client.nome == null ? "" : contentHub.userInfo.client.nome);
+            $(".surname").val(contentHub.userInfo.client.apelido == null ? "" : contentHub.userInfo.client.apelido);
+            $(".phoneNumber").val(contentHub.userInfo.client.telefone == null ? "" : contentHub.userInfo.client.telefone);
+            $(".email").val(contentHub.userInfo.client.email == null ? "" : contentHub.userInfo.client.email);
+
+        },
+    };
+
+    $(document).ready(function () {
+        debugger;
+        reserve.getReserveInitialData();
+
+        $(".reserveBtn").on("click", function (e) {
+
+            var obj = {
+                idRoom: reserve.idRoom,
+                idClient: contentHub.userInfo.client.id,
+                name: $(".name").val(),
+                surname: $(".surname").val(),
+                phoneNumber: $(".phoneNumber").val(),
+                email: $(".email").val(),
+                startDate: reserve.startDate,
+                endDate: reserve.endDate
+            }
 
             $.ajax({
-                url: "http://127.0.0.1:8080/getReserveInitialData",
+                url: "http://127.0.0.1:8080/createUserReserve",
                 type: "POST",
                 contentType: "application/json",
-                data: null,
+                data: JSON.stringify(obj),
                 success: function (data) {
-                    debugger;
-                    reserve.roomFeatures = data.roomFeatures;
-
-                    //var dataSelect2 = [];
-                    //dataSelect2.push({id:-1, text: "Selecione um serviço",selected: true});
-                    var dataSelect2 = $.map(data.roomFeatures, function (obj) {
-                        obj.text = obj.nome;
-                        return obj;
-                    });
-
-                    $('.additionalServices').prepend('<option selected></option>').select2({
-                        placeholder: "Selecione um serviço",
-                        allowClear: true,
-                        data: dataSelect2
-                    });
+                    alert(data.responseText);
                 },
                 error: function (data) {
                     alert(data.responseText);
                 }
             });
-        }
-    };
-
-    $(document).ready(function () {
-
-        reserve.getReserveInitialData();
-        debugger;
-
-        $(".searchRoomBtn").on("click", function (e) {
-            debugger;
-            var startDateString = $(".startDate").val() == "" ? null : $(".startDate").val();
-            var endDateString = $(".endDate").val() == "" ? null : $(".endDate").val();
-            var numberOfPeople = $(".numberPeople").val() == "" || parseInt($(".numberPeople").val()) <= 0 ? null : parseInt($(".numberPeople").val());
-
-            var additionalServices = $(".additionalServices").val();
-            additionalServices = additionalServices.filter(x => x != "");
-
-            $.each(additionalServices, function(index, value){
-                additionalServices[index] = {id: parseInt(value), nome: ""}
-            });
-
-            var startDate = moment(startDateString, "YYYY-MM-DD").toDate();
-            var endDate = moment(endDateString, "YYYY-MM-DD").toDate();
-            debugger;
-            var dateNow = moment(moment().format('YYYY-MM-DD')).toDate();
-            if (startDateString != null && endDateString != null && startDate < endDate && startDate > dateNow && endDate > dateNow
-            && numberOfPeople != null){
-
-                var obj = {
-                    startDate: startDate,
-                    endDate: endDate,
-                    numberOfPeople: numberOfPeople,
-                    additionalServices: additionalServices
-                }
-
-                $.ajax({
-                    url: "http://127.0.0.1:8080/getRoomsForReserve",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(obj),
-                    success: function (data) {
-
-                    },
-                    error: function (data) {
-                        alert(data.responseText);
-                    }
-                });
-
-            }
 
         });
-    });
 
+    });
 </script>

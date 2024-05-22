@@ -4,6 +4,8 @@ import CaracteristicaQuarto
 import Cliente
 import Permissao
 import Pessoa
+import Quarto.Companion.getAvailableRooms
+import Reserva.Companion.createReserve
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -35,8 +37,8 @@ fun Application.configureRouting() {
         @Serializable
         data class DTO_ReserveInitialData(val roomFeatures: MutableList<CaracteristicaQuarto>)
 
-        @Serializable
-        data class DTO_DataSerchRoomsForReserve(val startDate: LocalDateTime, val endDate: LocalDateTime, val numberOfPeople: Int, val additionalServices: MutableList<CaracteristicaQuarto>)
+        //@Serializable
+        //data class DTO_DataSerchRoomsForReserve(val startDate: String, val endDate: String, val numberOfPeople: Int, val additionalServices: MutableList<CaracteristicaQuarto>)
 
         /* ************************** PAGES ************************** */
         get("/") {
@@ -53,6 +55,10 @@ fun Application.configureRouting() {
 
         get("/dashboard") {
             call.respondFile(File("pages/dashboard.html"))
+        }
+
+        get("/roomsToReserve") {
+            call.respondFile(File("pages/roomsToReserve.html"))
         }
 
         get("/reserve") {
@@ -106,7 +112,7 @@ fun Application.configureRouting() {
 
             if (responseData.first){
 
-                val cliente: DTO_Cliente = DTO_Cliente(
+                val client: DTO_Cliente = DTO_Cliente(
                     (responseData.second as Cliente).id,
                     (responseData.second as Cliente).userName,
                     (responseData.second as Cliente).password,
@@ -117,9 +123,14 @@ fun Application.configureRouting() {
                     (responseData.second as Cliente).permissoes
                 )
 
+                client.nome = if (client.nome == "null") null else client.nome
+                client.apelido = if (client.apelido == "null") null else client.apelido
+                client.email = if (client.email == "null") null else client.email
+                client.telefone = if (client.telefone == "null") null else client.telefone
+
                 val permissionsList: MutableList<Permissao> = Permissao.getAllPermissions()
 
-                val userInfo: DTO_getUserInitalData = DTO_getUserInitalData(cliente, permissionsList)
+                val userInfo: DTO_getUserInitalData = DTO_getUserInitalData(client, permissionsList)
 
                 val json = Json.encodeToString(userInfo)
                 call.respondText(json, ContentType.Application.Json)
@@ -129,7 +140,7 @@ fun Application.configureRouting() {
             }
         }
 
-        post("/getReserveInitialData") {
+        post("/getRoomsToReserveInitialData") {
             try {
                 val roomFeatures = CaracteristicaQuarto.getRoomFeatures()
                 val responseData = DTO_ReserveInitialData(roomFeatures)
@@ -146,11 +157,25 @@ fun Application.configureRouting() {
             try {
                 val jsonData = call.receive<String>()
                 val data = Json.decodeFromString<DTO_DataSerchRoomsForReserve>(jsonData)
-                print(data)
+                val responseData = getAvailableRooms(data)
+
+                val json = Json.encodeToString(responseData)
+                call.respondText(json, ContentType.Application.Json)
             }catch (exception: Exception){
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
             }
         }
 
+        post("/createUserReserve") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_ReserveData>(jsonData)
+                val responseData = createReserve(data)
+
+                call.respondText("Reserva criada com sucesso!", status = HttpStatusCode.Created)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
     }
 }
