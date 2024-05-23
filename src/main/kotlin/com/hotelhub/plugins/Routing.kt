@@ -6,6 +6,7 @@ import Permissao
 import Pessoa
 import Quarto.Companion.getAvailableRooms
 import Reserva.Companion.createReserve
+import com.hotelhub.plugins.RoomService.Companion.getRoomServiceInitialData
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -63,6 +64,10 @@ fun Application.configureRouting() {
 
         get("/reserve") {
             call.respondFile(File("pages/reserve.html"))
+        }
+
+        get("/roomService") {
+            call.respondFile(File("pages/roomService.html"))
         }
 
         /* ************************** METHODS ************************** */
@@ -173,6 +178,29 @@ fun Application.configureRouting() {
                 val responseData = createReserve(data)
 
                 call.respondText("Reserva criada com sucesso!", status = HttpStatusCode.Created)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getRoomServiceInitialData") {
+            try {
+                val jsonData = call.receive<String>()
+                val idUser: String = jsonData
+                val responseData = getRoomServiceInitialData(idUser)
+
+                if (responseData.first){
+
+                    val roomServiceInitialData: DTO_GetRoomServiceInitialData = DTO_GetRoomServiceInitialData(
+                        (responseData.second as DTO_GetRoomServiceInitialData).idReserve,
+                        (responseData.second as DTO_GetRoomServiceInitialData).menu,
+                    )
+
+                    val json = Json.encodeToString(roomServiceInitialData)
+                    call.respondText(json, ContentType.Application.Json)
+                }else{
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.NotFound)
+                }
             }catch (exception: Exception){
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
             }

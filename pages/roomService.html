@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Serviço de Quartos</h6>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Item</label>
+                            <select class="form-control items"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label class="form-control-label">Quantidade</label>
+                            <input class="form-control itemQuantity" type="number">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="margin-top: 31px">
+                        <button type="button" class="button-3 addItem" style="height: 38.5px;">Adicionar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var roomService = {
+        idReserve: null,
+        menu: null,
+
+        getRoomServiceInitialData: function () {
+
+            var obj = {
+                idUser: contentHub.userInfo.client.id
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getRoomServiceInitialData",
+                type: "POST",
+                contentType: "application/json",
+                data: contentHub.userInfo.client.id,
+                success: function (data) {
+                    debugger;
+                    roomService.idReserve = data.idReserve;
+                    roomService.menu = data.menu;
+
+                    var dataSelect2 = $.map(roomService.menu, function (obj) {
+                        obj.text = obj.name;
+                        return obj;
+                    });
+
+                    $('.items').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione um item",
+                        allowClear: true,
+                        data: dataSelect2
+                    });
+
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        }
+    };
+
+    $(document).ready(function () {
+
+        /*
+        $('.items').prepend('<option selected></option>').select2({
+            placeholder: "Selecione um item",
+            allowClear: true,
+        });
+        */
+
+
+        roomService.getRoomServiceInitialData();
+
+
+    });
+
+</script>

@@ -75,7 +75,8 @@
                 </div>
             </div>
         </div>
-        <a class="btn btn-danger btn-sm mb-0 w-100 logoutBtn" type="button">Logout</a>
+        <a class="btn btn-secondary btn-sm w-100 logoutBtn" type="button">Definições</a>
+        <a class="btn btn-danger btn-sm w-100 logoutBtn" type="button">Logout</a>
     </div>
 </aside>
 <main class="main-content position-relative border-radius-lg ">
@@ -109,7 +110,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="col-4 text-end">
+                            <div class="col-4 text-end-new">
                                 <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
                                     <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
                                 </div>
@@ -132,7 +133,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="col-4 text-end">
+                            <div class="col-4 text-end-new">
                                 <div
                                         class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle meteorologyIcon">
                                     <!--<i class="meteorologyIcon text-lg opacity-10" aria-hidden="true"></i>-->
@@ -279,7 +280,7 @@
                     $(".contentHubInjection").load("/roomsToReserve");
                     break;
                 case '2':
-                    alert("Click!");
+                    $(".contentHubInjection").load("/roomService");
                     break;
             }
 

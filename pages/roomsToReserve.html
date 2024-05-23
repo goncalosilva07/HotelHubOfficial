@@ -175,7 +175,7 @@
                                     '                        </div>\n' +
                                     '                        <div class="col-md-9">\n' +
                                     '                            <h5 style="margin-bottom: 21px;">HOTEL HUB QUARTO Nº' + value.numero + '</h5>\n' +
-                                    '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">PREÇO TOTAL: ' + value.preco + '€</p>\n' +
+                                    '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">PREÇO NOITE: ' + value.preco + '€</p>\n' +
                                     '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">CAPACIDADE: ' + value.capacidade + ' PESSOAS</p>\n' +
                                     '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">SERVIÇOS:</p>\n' +
                                     '                            <p style="line-height: 0.1; font-weight: 600; font-size: 14px">' + servicesToAppend + '</p>\n' +
@@ -191,7 +191,7 @@
                                     '                        </div>\n' +
                                     '                        <div class="col-md-9">\n' +
                                     '                            <h5 style="margin-bottom: 21px;">HOTEL HUB QUARTO Nº' + value.numero + '</h5>\n' +
-                                    '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">PREÇO TOTAL: ' + value.preco + '€</p>\n' +
+                                    '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">PREÇO NOITE: ' + value.preco + '€</p>\n' +
                                     '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">CAPACIDADE: ' + value.capacidade + ' PESSOAS</p>\n' +
                                     '                            <p style="line-height: 1; font-weight: 600; font-size: 14px">SERVIÇOS:</p>\n' +
                                     '                            <p style="line-height: 0.1; font-weight: 600; font-size: 14px">' + servicesToAppend + '</p>\n' +
@@ -217,6 +217,10 @@
 
         });
 
+
+        $(".additionalServices").on('change', function(e) {
+            debugger;
+        });
 
         $(document).on('click', '.doReserve', function(e) {
             debugger;

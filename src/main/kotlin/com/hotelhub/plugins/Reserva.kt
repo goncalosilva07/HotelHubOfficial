@@ -86,6 +86,5 @@ class Reserva(var numero: String,
             return code
         }
 
-
     }
 }
