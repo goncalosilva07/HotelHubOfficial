@@ -1,4 +1,4 @@
-import com.hotelhub.plugins.DTO_DataSerchRoomsForReserve
+import com.hotelhub.plugins.Reserve.DTO_DataSerchRoomsForReserve
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import java.io.File

@@ -1,4 +1,6 @@
-import kotlinx.serialization.Serializable
+package com.hotelhub.plugins.User
+
+import Permissao
 import java.io.File
 
 class Cliente (

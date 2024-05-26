@@ -1,4 +1,4 @@
-package com.hotelhub.plugins
+package com.hotelhub.plugins.Reserve
 
 import kotlinx.serialization.Serializable
 

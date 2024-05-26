@@ -1,19 +1,23 @@
 package com.hotelhub.plugins
+import com.hotelhub.plugins.RoomService.RoomService.Companion.getRoomServiceInitialData
+
 
 import CaracteristicaQuarto
-import Cliente
 import Permissao
-import Pessoa
 import Quarto.Companion.getAvailableRooms
-import Reserva.Companion.createReserve
-import com.hotelhub.plugins.RoomService.Companion.getRoomServiceInitialData
+import com.hotelhub.plugins.Reserve.Reserva.Companion.createReserve
+import com.hotelhub.plugins.Reserve.DTO_DataSerchRoomsForReserve
+import com.hotelhub.plugins.Reserve.DTO_ReserveData
+import com.hotelhub.plugins.RoomService.DTO_CreateRoomService
+import com.hotelhub.plugins.RoomService.DTO_GetRoomServiceInitialData
+import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomService
+import com.hotelhub.plugins.User.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.datetime.LocalDateTime
 import java.io.File
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -177,7 +181,12 @@ fun Application.configureRouting() {
                 val data = Json.decodeFromString<DTO_ReserveData>(jsonData)
                 val responseData = createReserve(data)
 
-                call.respondText("Reserva criada com sucesso!", status = HttpStatusCode.Created)
+                if (responseData.first){
+                    call.respondText("Reserva criada com sucesso!", status = HttpStatusCode.Created)
+                }else{
+                    call.respondText(responseData.second, status = HttpStatusCode.NotAcceptable)
+                }
+
             }catch (exception: Exception){
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
             }
@@ -200,6 +209,22 @@ fun Application.configureRouting() {
                     call.respondText(json, ContentType.Application.Json)
                 }else{
                     call.respondText(responseData.second.toString(), status = HttpStatusCode.NotFound)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/createRoomServiceInitialData") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_CreateRoomService>(jsonData)
+                val responseData = createRoomService(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.Created)
+                }else{
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.InternalServerError)
                 }
             }catch (exception: Exception){
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)

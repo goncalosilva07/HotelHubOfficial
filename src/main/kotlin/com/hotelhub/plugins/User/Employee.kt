@@ -1,3 +1,7 @@
+package com.hotelhub.plugins.User
+
+import Horario
+import Permissao
 import java.io.File
 import java.util.*
 
@@ -14,7 +18,8 @@ class Employee (id: String,
                 var genero: String,
                 var salario: Double,
                 var cargo: String,
-                var horario: List<Horario>):Pessoa(id, userName, password, nome, apelido, email, telefone, permissoes, isClient = false)
+                var horario: List<Horario>):
+    Pessoa(id, userName, password, nome, apelido, email, telefone, permissoes, isClient = false)
 {
 
     override fun register(): Pair<Boolean, String> {
@@ -47,7 +52,7 @@ class Employee (id: String,
 }
 
 /*
-class Employee (var nome: String, var nif: Int,
+class com.hotelhub.plugins.User.Employee (var nome: String, var nif: Int,
                          var dataDeNascimento: Date, var genero: String, var salario: Double,
                          var email: String, var telefone: Int, var cargo: String){
 

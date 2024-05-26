@@ -34,53 +34,75 @@
 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!--
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.css" />
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+    -->
+    <!--
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+     -->
+    <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.11/css/jquery.dataTables.min.css">-->
+
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.11/css/jquery.dataTables.min.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.11/js/jquery.dataTables.min.js"></script>
+
 </head>
+
+<style>
+    .dateIcon{
+        margin-top: 12px;
+        margin-left: 1px;
+        color: white;
+    }
+</style>
 
 <body class="g-sidenav-show   bg-gray-100">
 <div class="min-height-300 bg-primary position-absolute w-100"></div>
 <aside
-        class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 "
-        id="sidenav-main">
-    <div class="sidenav-header">
-        <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
-           aria-hidden="true" id="iconSidenav"></i>
-        <a class="navbar-brand m-0" href="contentHub">
-            <img src="/static/images/HotelHubLogo.png" class="navbar-brand-img h-100" alt="main_logo">
-            <span class="ms-1 font-weight-bold">HOTELHUB</span>
-        </a>
-    </div>
-    <hr class="horizontal dark mt-0">
-    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
-        <ul class="navbar-nav userPermissionsActivities">
-            <li class="nav-item menuOption" id="0">
-                <a class="nav-link active">
-                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <span class="material-symbols-outlined">dashboard</span>
-                    </div>
-                    <span class="nav-link-text ms-1">Dashboard</span>
-                </a>
-            </li>
+       class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 "
+       id="sidenav-main">
+   <div class="sidenav-header">
+       <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
+          aria-hidden="true" id="iconSidenav"></i>
+       <a class="navbar-brand m-0" href="contentHub">
+           <img src="/static/images/HotelHubLogo.png" class="navbar-brand-img h-100" alt="main_logo">
+           <span class="ms-1 font-weight-bold">HOTELHUB</span>
+       </a>
+   </div>
+   <hr class="horizontal dark mt-0">
+   <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
+       <ul class="navbar-nav userPermissionsActivities">
+           <li class="nav-item menuOption" id="0">
+               <a class="nav-link active">
+                   <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                       <span class="material-symbols-outlined">dashboard</span>
+                   </div>
+                   <span class="nav-link-text ms-1">Dashboard</span>
+               </a>
+           </li>
 
 
-        </ul>
-    </div>
-    <hr class="horizontal dark mt-0">
-    <div class="sidenav-footer mx-3 ">
-        <div class="card card-plain shadow-none" id="sidenavCard">
-            <img class="w-40 mx-auto" src="/static/images/userDefault.png" alt="sidebar_illustration">
-            <div class="card-body text-center p-3 w-100 pt-0">
-                <div class="user-info">
-                    <h6 class="mb-0 userNameDisplay"></h6>
-                    <p class="text-xs font-weight-bold mb-0 userCourseDisplay"></p>
-                </div>
-            </div>
-        </div>
-        <a class="btn btn-secondary btn-sm w-100 logoutBtn" type="button">Definições</a>
-        <a class="btn btn-danger btn-sm w-100 logoutBtn" type="button">Logout</a>
-    </div>
+       </ul>
+   </div>
+   <hr class="horizontal dark mt-0">
+   <div class="sidenav-footer mx-3 ">
+       <div class="card card-plain shadow-none" id="sidenavCard">
+           <img class="mx-auto" src="/static/images/userDefault.png" alt="sidebar_illustration" style="width: 35% !important;">
+           <div class="card-body text-center p-3 w-100 pt-0">
+               <div class="user-info">
+                   <h6 class="mb-0 userNameDisplay"></h6>
+               </div>
+           </div>
+       </div>
+       <a class="btn btn-secondary btn-sm w-100 logoutBtn" type="button" style="margin-bottom: 0.6rem !important;">Definições</a>
+       <a class="btn btn-danger btn-sm w-100 logoutBtn" type="button" style="margin-bottom: 0.6rem !important;">Logout</a>
+   </div>
 </aside>
 <main class="main-content position-relative border-radius-lg ">
-    <!-- Navbar -->
+   <!-- Navbar -->
     <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur"
          data-scroll="false">
         <div class="container-fluid py-1 px-3">
@@ -112,7 +134,7 @@
                             </div>
                             <div class="col-4 text-end-new">
                                 <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
-                                    <i class="ni ni-world text-lg opacity-10" aria-hidden="true"></i>
+                                    <span class="material-symbols-outlined dateIcon" aria-hidden="true">calendar_month</span>
                                 </div>
                             </div>
                         </div>
@@ -196,11 +218,10 @@
 
                         contentHub.userInfo = data;
 
-                        $(".userNameDisplay").html(contentHub.userInfo.userName);
+                        $(".userNameDisplay").html(contentHub.userInfo.client.userName);
 
                         var htmlToAppend = ''
                         $.each(data.permissionsList, function( key, value ) {
-                            debugger;
                             if(data.client.permissoes.find(x => x.id == value.id)) {
                                 htmlToAppend += '<li class="nav-item menuOption" id=' + value.id + '>\n' +
                                     '                <a class="nav-link">\n' +
@@ -233,13 +254,6 @@
                             $(".meteorologyCity").html(city);
                             $(".meteorologyIcon").html("<img src='" + icon + "'>");
                         });
-
-                        /*
-                        $(".userCourseDisplay").html(contentHub.userInfo.course);
-                        $(".userBalance").html(contentHub.userInfo.balance + "€");
-                        */
-
-
                     },
                     error: function () {
                         alert("Problema de autenticação! Efetue a autenticação novamente.")

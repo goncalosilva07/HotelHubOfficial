@@ -6,3 +6,4 @@ IHDR|goncalo|12345|null|null|null|null|true
 SRPM|diogo|12345|null|null|null|null|true
 STLB|aaaa|123456|null|null|null|null|true
 QKTD|admin|123456|null|null|null|null|true
+YGXA|contaTeste|123456|null|null|null|null|true

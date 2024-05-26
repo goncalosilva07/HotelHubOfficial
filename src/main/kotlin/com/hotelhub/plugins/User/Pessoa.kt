@@ -1,4 +1,6 @@
-import com.hotelhub.plugins.DTO_LoginData
+package com.hotelhub.plugins.User
+
+import Permissao
 import java.io.File
 import java.security.MessageDigest
 import java.text.SimpleDateFormat

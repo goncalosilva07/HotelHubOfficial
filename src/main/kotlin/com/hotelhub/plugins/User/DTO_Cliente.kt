@@ -1,4 +1,4 @@
-package com.hotelhub.plugins
+package com.hotelhub.plugins.User
 
 import Permissao
 import kotlinx.serialization.Serializable

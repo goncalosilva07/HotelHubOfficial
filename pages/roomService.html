@@ -24,25 +24,42 @@
                     <h6 class="mb-2">Serviço de Quartos</h6>
                 </div>
             </div>
-            <div class="card-body">
+            <div class="card-body roomServiceCardBody">
                 <div class="row">
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label class="form-control-label">Item</label>
-                            <select class="form-control items"></select>
+                            <label class="form-control-label">Produto</label>
+                            <select class="form-control products"></select>
                         </div>
                     </div>
 
                     <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-control-label">Quantidade</label>
-                            <input class="form-control itemQuantity" type="number">
+                            <input class="form-control productQuantity" type="number">
                         </div>
                     </div>
 
                     <div class="col-md-3" style="margin-top: 31px">
-                        <button type="button" class="button-3 addItem" style="height: 38.5px;">Adicionar</button>
+                        <button type="button" class="button-3 addProduct" style="height: 38.5px;">Adicionar</button>
+                    </div>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="productsTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="col-md-2" style="margin-top: 20px">
+                        <button type="button" class="button-3 addRoomService" style="height: 38.5px; width: 100%">Finalizar</button>
                     </div>
 
                 </div>
@@ -58,12 +75,10 @@
     var roomService = {
         idReserve: null,
         menu: null,
+        table: null,
+        tableData: [],
 
         getRoomServiceInitialData: function () {
-
-            var obj = {
-                idUser: contentHub.userInfo.client.id
-            }
 
             $.ajax({
                 url: "http://127.0.0.1:8080/getRoomServiceInitialData",
@@ -80,33 +95,138 @@
                         return obj;
                     });
 
-                    $('.items').prepend('<option selected></option>').select2({
-                        placeholder: "Selecione um item",
+                    $('.products').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione um produto",
                         allowClear: true,
                         data: dataSelect2
                     });
 
+                    $(".productQuantity").val(1);
+
+                },
+                error: function (data) {
+                    $(".roomServiceCardBody").html('<div class="col-md-12" style="text-align: center; margin-top: 5vh; margin-bottom: 5vh;"><span>SEM RESERVAS</span></div>');
+                }
+            });
+        },
+
+        updateTable: function () {
+            roomService.table.clear().rows.add(roomService.tableData).draw();
+        },
+
+        addProduct: function () {
+            debugger;
+            var idProduct = $(".products").select2("data")[0].id;
+
+            if (roomService.tableData.find(x => x.idProduct == idProduct) == null) {
+
+
+                var textProduct = $(".products").select2("data")[0].text;
+                var priceProduct = $(".products").select2("data")[0].price;
+
+                var quantityProduct = $(".productQuantity").val();
+                priceProduct = quantityProduct * priceProduct;
+
+                var obj = {
+                    idProduct: idProduct,
+                    textProduct: textProduct,
+                    quantityProduct: quantityProduct,
+                    priceProduct: priceProduct.toFixed(2),
+                }
+
+                roomService.tableData.push(obj);
+                roomService.updateTable();
+                $(".productQuantity").val(1);
+            }else{
+                alert("Produto já inserido!")
+            }
+            //roomService.table.clear().rows.add(roomService.tableData).draw();
+
+        },
+
+        removeProduct: function (id){
+            debugger;
+            var data = roomService.tableData.find(x => x.idProduct != id);
+            roomService.tableData = [];
+            if (data != null){
+                roomService.tableData.push(data);
+            }
+            roomService.updateTable();
+        },
+
+        addRoomService: function (){
+
+            var products = [];
+
+            $.each(roomService.tableData, function(i, data){
+                debugger;
+                var obj = {
+                    idProduct: data.idProduct,
+                    quantity: data.quantityProduct
+                }
+                products.push(obj);
+            });
+
+            var obj = {
+                idReserve: roomService.idReserve,
+                products: products
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/createRoomServiceInitialData",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
                 },
                 error: function (data) {
                     alert(data.responseText);
                 }
             });
-        }
+        },
     };
 
     $(document).ready(function () {
 
-        /*
-        $('.items').prepend('<option selected></option>').select2({
-            placeholder: "Selecione um item",
-            allowClear: true,
+        roomService.table = $('#productsTable').DataTable({
+            data: roomService.tableData,
+            columns: [
+                { data: "textProduct" },
+                { data: "quantityProduct" },
+                { data: "priceProduct" }
+            ],
+            columnDefs: [
+                {
+                    "targets": 3,
+                    "render": function(data, type, row, meta) {
+                        return '<span class="material-symbols-outlined removeProduct" id="' + row.idProduct + '"> delete </span>'
+                    }
+                },
+                {
+                    "targets": 2,
+                    "render": function(data, type, row, meta) {
+                        return row.priceProduct + "€"
+                    }
+                }
+        ],
         });
-        */
-
 
         roomService.getRoomServiceInitialData();
 
+        $(".addProduct").on("click", function (e) {
+           roomService.addProduct();
+        });
 
+        $(document).on('click', '.removeProduct', function(e) {
+            var id = e.target.id;
+            roomService.removeProduct(id);
+        });
+
+        $(".addRoomService").on("click", function (e) {
+            roomService.addRoomService();
+        });
     });
 
 </script>
