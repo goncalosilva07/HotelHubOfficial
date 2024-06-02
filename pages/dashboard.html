@@ -11,7 +11,8 @@
             </div>
             <div class="table-responsive">
                 <table class="table align-items-center ">
-                    <tbody class="transactionsTableBody">
+                    <tbody class="roomServicesTableBody">
+
 
                     </tbody>
                 </table>
@@ -30,7 +31,9 @@
             </div>
             <div class="table-responsive">
                 <table class="table align-items-center ">
-                    <tbody class="ticketsTableBody">
+                    <tbody class="reservesTableBody">
+
+
 
                     </tbody>
                 </table>
@@ -38,5 +41,117 @@
         </div>
     </div>
 </div>
-
 </html>
+
+<script>
+
+    var dashboard = {
+
+        getClientDashBoardInitialData: function () {
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getClientDashBoardInitialData",
+                type: "POST",
+                contentType: "application/json",
+                data: contentHub.userInfo.user.id,
+                success: function (data) {
+
+                    var htmlToAppend = "";
+
+                    if (data.roomServiceList.length == 0){
+                        htmlToAppend = '<div style="text-align: center; margin-top: 10vh; margin-bottom: 10vh;">SEM SERVIÇOS DE QUARTO</div>';
+                    }else{
+                        $.each(data.roomServiceList, function( index, value ) {
+                            htmlToAppend += '<tr>\n' +
+                                '                        <td class="w-10">\n' +
+                                '                            <div class="d-flex px-2 py-1 align-items-center">\n' +
+                                '                                <div><span class="material-symbols-outlined">add</span></div>\n' +
+                                '                                <div class="ms-4" style="margin-left: 2rem !important;">\n' +
+                                '                                    <p class="text-xs font-weight-bold mb-0">Produto:</p>\n' +
+                                '                                    <h6 class="text-sm mb-0">' + value.nome + '</h6>\n' +
+                                '                                </div>\n' +
+                                '                                </div>\n' +
+                                '                            </td>\n' +
+                                '                        <td>\n' +
+                                '                            <div class="text-center">\n' +
+                                '                                <p class="text-xs font-weight-bold mb-0">Quantidade:</p>\n' +
+                                '                                <h6 class="text-sm mb-0">' + value.quantidade + '</h6>\n' +
+                                '                                </div>\n' +
+                                '                            </td>\n' +
+                                '                        <td>\n' +
+                                '                            <div class="text-center">\n' +
+                                '                                <p class="text-xs font-weight-bold mb-0">Preço:</p>\n' +
+                                '                                <h6 class="text-sm mb-0">' + value.preco.toFixed(2) + '€</h6>\n' +
+                                '                                </div>\n' +
+                                '                            </td>\n' +
+                                '                        </tr>';
+                        });
+                    }
+
+                    $(".roomServicesTableBody").html(htmlToAppend);
+
+                    htmlToAppend = "";
+
+                    if (data.reserveList.length == 0){
+                        htmlToAppend = '<div style="text-align: center; margin-top: 10vh; margin-bottom: 10vh;">SEM ESTADIAS</div>';
+                    }else{
+                        $.each(data.reserveList, function( index, value ) {
+                            htmlToAppend += '<tr>\n' +
+                                '                        <td class="w-10">\n' +
+                                '                            <div class="d-flex px-2 py-1 align-items-center">\n' +
+                                '                                <div><span class="material-symbols-outlined">add</span></div>\n' +
+                                '                                <div class="ms-4" style="margin-left: 2rem !important;">\n' +
+                                '                                    <p class="text-xs font-weight-bold mb-0">Reserva:</p>\n' +
+                                '                                    <h6 class="text-sm mb-0">' + value.numero + '</h6>\n' +
+                                '                                </div>\n' +
+                                '                            </div>\n' +
+                                '                        </td>\n' +
+                                '                        <td>\n' +
+                                '                            <div class="text-center">\n' +
+                                '                                <p class="text-xs font-weight-bold mb-0">Nº Quarto:</p>\n' +
+                                '                                <h6 class="text-sm mb-0">' + value.idQuarto + '</h6>\n' +
+                                '                            </div>\n' +
+                                '                        </td>\n' +
+                                '                        <td>\n' +
+                                '                            <div class="text-center">\n' +
+                                '                                <p class="text-xs font-weight-bold mb-0">Data Início:</p>\n' +
+                                '                                <h6 class="text-sm mb-0">' + value.dataInicio + '</h6>\n' +
+                                '                            </div>\n' +
+                                '                        </td>\n' +
+                                '                        <td>\n' +
+                                '                            <div class="text-center">\n' +
+                                '                                <p class="text-xs font-weight-bold mb-0">Data Fim:</p>\n' +
+                                '                                <h6 class="text-sm mb-0">' + value.dataFim + '</h6>\n' +
+                                '                            </div>\n' +
+                                '                        </td>\n' +
+                                '                        <td>\n' +
+                                '                            <div class="text-center">\n' +
+                                '                                <p class="text-xs font-weight-bold mb-0">Preço:</p>\n' +
+                                '                                <h6 class="text-sm mb-0">' + value.preco.toFixed(2) + '€</h6>\n' +
+                                '                            </div>\n' +
+                                '                        </td>\n' +
+                                '                    </tr>';
+                        });
+                    }
+
+                    $(".reservesTableBody").html(htmlToAppend);
+
+                },
+                error: function (data) {
+                    debugger;
+                    //$(".roomServiceCardBody").html('<div class="col-md-12" style="text-align: center; margin-top: 5vh; margin-bottom: 5vh;"><span>SEM RESERVAS</span></div>');
+                }
+            });
+        },
+
+    };
+
+    $(document).ready(function () {
+
+        dashboard.getClientDashBoardInitialData();
+
+
+    });
+
+
+</script>

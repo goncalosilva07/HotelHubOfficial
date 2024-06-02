@@ -12,6 +12,7 @@ import com.hotelhub.plugins.RoomService.DTO_CreateRoomService
 import com.hotelhub.plugins.RoomService.DTO_GetRoomServiceInitialData
 import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomService
 import com.hotelhub.plugins.User.*
+import com.hotelhub.plugins.User.Cliente.Companion.getClientDashBoardInitialData
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -82,7 +83,7 @@ fun Application.configureRouting() {
             val registerData = Json.decodeFromString<RegisterInfo>(jsonData)
             println(registerData)
 
-            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, null, null, null, null, mutableListOf())
+            val cliente: Cliente = Cliente("", registerData.userName, registerData.password, null, null, null, null, mutableListOf(), true)
             val responseCreateClient: Pair<Boolean, String> = cliente.register()
 
             if (responseCreateClient.first){
@@ -121,28 +122,63 @@ fun Application.configureRouting() {
 
             if (responseData.first){
 
-                val client: DTO_Cliente = DTO_Cliente(
-                    (responseData.second as Cliente).id,
-                    (responseData.second as Cliente).userName,
-                    (responseData.second as Cliente).password,
-                    (responseData.second as Cliente).nome,
-                    (responseData.second as Cliente).apelido,
-                    (responseData.second as Cliente).email,
-                    (responseData.second as Cliente).telefone,
-                    (responseData.second as Cliente).permissoes
-                )
+                if ((responseData.second as Pessoa).isClient) {
 
-                client.nome = if (client.nome == "null") null else client.nome
-                client.apelido = if (client.apelido == "null") null else client.apelido
-                client.email = if (client.email == "null") null else client.email
-                client.telefone = if (client.telefone == "null") null else client.telefone
+                    val client: DTO_Cliente = DTO_Cliente(
+                        (responseData.second as Cliente).id,
+                        (responseData.second as Cliente).userName,
+                        (responseData.second as Cliente).password,
+                        (responseData.second as Cliente).nome,
+                        (responseData.second as Cliente).apelido,
+                        (responseData.second as Cliente).email,
+                        (responseData.second as Cliente).telefone,
+                        (responseData.second as Cliente).permissoes,
+                        (responseData.second as Cliente).isClient
+                    )
 
-                val permissionsList: MutableList<Permissao> = Permissao.getAllPermissions()
+                    client.nome = if (client.nome == "null") null else client.nome
+                    client.apelido = if (client.apelido == "null") null else client.apelido
+                    client.email = if (client.email == "null") null else client.email
+                    client.telefone = if (client.telefone == "null") null else client.telefone
 
-                val userInfo: DTO_getUserInitalData = DTO_getUserInitalData(client, permissionsList)
+                    val permissionsList: MutableList<Permissao> = Permissao.getAllPermissions()
 
-                val json = Json.encodeToString(userInfo)
-                call.respondText(json, ContentType.Application.Json)
+                    val userInfo: DTO_GetClientInitalData = DTO_GetClientInitalData(client, permissionsList)
+
+                    val json = Json.encodeToString(userInfo)
+                    call.respondText(json, ContentType.Application.Json)
+                }else{
+
+                    val employee: DTO_Employee = DTO_Employee(
+                        (responseData.second as Employee).id,
+                        (responseData.second as Employee).userName,
+                        (responseData.second as Employee).password,
+                        (responseData.second as Employee).nome,
+                        (responseData.second as Employee).apelido,
+                        (responseData.second as Employee).email,
+                        (responseData.second as Employee).telefone,
+                        (responseData.second as Employee).permissoes,
+                        (responseData.second as Employee).isClient,
+                        (responseData.second as Employee).nif,
+                        (responseData.second as Employee).dataDeNascimento,
+                        (responseData.second as Employee).genero,
+                        (responseData.second as Employee).salario,
+                        (responseData.second as Employee).cargo,
+                        (responseData.second as Employee).horario
+                    )
+
+                    employee.nome = if (employee.nome == "null") null else employee.nome
+                    employee.apelido = if (employee.apelido == "null") null else employee.apelido
+                    employee.email = if (employee.email == "null") null else employee.email
+                    employee.telefone = if (employee.telefone == "null") null else employee.telefone
+
+                    val permissionsList: MutableList<Permissao> = Permissao.getAllPermissions()
+
+                    val userInfo: DTO_GetEmployeeInitialData = DTO_GetEmployeeInitialData(employee, permissionsList)
+
+                    val json = Json.encodeToString(userInfo)
+                    call.respondText(json, ContentType.Application.Json)
+                }
 
             }else{
                 call.respondText((responseData.second as String), status = HttpStatusCode.NotFound)
@@ -226,6 +262,19 @@ fun Application.configureRouting() {
                 }else{
                     call.respondText(responseData.second.toString(), status = HttpStatusCode.InternalServerError)
                 }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getClientDashBoardInitialData") {
+            try {
+                val jsonData = call.receive<String>()
+                val idUser: String = jsonData
+                val responseData = getClientDashBoardInitialData(idUser)
+
+                val json = Json.encodeToString(responseData)
+                call.respondText(json, ContentType.Application.Json)
             }catch (exception: Exception){
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
             }

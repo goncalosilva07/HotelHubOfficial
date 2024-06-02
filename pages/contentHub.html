@@ -215,14 +215,14 @@
                     contentType: "application/json",
                     data: JSON.stringify(obj),
                     success: function (data) {
-
+                        debugger;
                         contentHub.userInfo = data;
 
-                        $(".userNameDisplay").html(contentHub.userInfo.client.userName);
+                        $(".userNameDisplay").html(contentHub.userInfo.user.userName);
 
                         var htmlToAppend = ''
                         $.each(data.permissionsList, function( key, value ) {
-                            if(data.client.permissoes.find(x => x.id == value.id)) {
+                            if(data.user.permissoes.find(x => x.id == value.id)) {
                                 htmlToAppend += '<li class="nav-item menuOption" id=' + value.id + '>\n' +
                                     '                <a class="nav-link">\n' +
                                     '                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">\n' +

@@ -6,6 +6,7 @@ import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
+import kotlinx.datetime.LocalDate
 
 abstract class Pessoa(
     var id: String,
@@ -107,7 +108,7 @@ abstract class Pessoa(
                     if (userSplit[7].toBoolean() == true){
                         val permissionsList: MutableList<Permissao> = getUserPermissions(userSplit[0])
 
-                        val client: Cliente = Cliente(userSplit[0], userSplit[1],userSplit[2],userSplit[3],userSplit[4],userSplit[5],userSplit[6],permissionsList)
+                        val client: Cliente = Cliente(userSplit[0], userSplit[1],userSplit[2],userSplit[3],userSplit[4],userSplit[5],userSplit[6],permissionsList, true)
 
                         val recognizeUser = recognizeUser(id, userName, enc)
 
@@ -120,6 +121,7 @@ abstract class Pessoa(
                         val permissionsList: MutableList<Permissao> = getUserPermissions(userSplit[0])
                         val fileEmployeeDB = "funcionarios.txt"
                         val fileEmployee = File("db/$fileEmployeeDB")
+
                         var employeeInfo: MutableList<String> = mutableListOf()
                         for (employeeData in fileEmployee.readLines()) {
                             val employeeSplit = employeeData.split("|");
@@ -128,11 +130,10 @@ abstract class Pessoa(
                             }
                         }
 
-                        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-                        val dataDeNascimento: Date = dateFormat.parse(employeeInfo[2])
+                        val dataDeNascimento: LocalDate = LocalDate.parse(employeeInfo[2])
                         /*ADICIONAR HORARIO*/
                         val employee: Employee = Employee(userSplit[0],userSplit[1],userSplit[2],userSplit[3],userSplit[4],userSplit[5],userSplit[6],
-                            permissionsList, employeeInfo[1], dataDeNascimento, employeeInfo[3], employeeInfo[4].toDouble(), employeeInfo[5], mutableListOf())
+                            permissionsList, false, employeeInfo[1], dataDeNascimento, employeeInfo[3], employeeInfo[4].toDouble(), employeeInfo[5], mutableListOf())
 
                         val recognizeUser = recognizeUser(id, userName, enc)
 

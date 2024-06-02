@@ -2,8 +2,8 @@ package com.hotelhub.plugins.Reserve
 
 import Quarto
 import Quarto.Companion.getRoom
-import com.hotelhub.plugins.User.DTO_Cliente
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.daysUntil
 import kotlinx.serialization.Serializable
 import java.io.File
@@ -11,15 +11,16 @@ import kotlin.random.Random
 
 
 @Serializable
-class Reserva(var numero: String,
-              var cliente: DTO_Cliente,
-              var quarto: Quarto,
-              var dataInicio: LocalDate,
-              var dataFim: LocalDate,
-              var checkIn: LocalDate?,
-              var checkOut: LocalDate?,
-              var preco: Double,
-              var ativa: Boolean) {
+class Reserva(
+    var numero: String,
+    var idCliente: String,
+    var idQuarto: Int,
+    var dataInicio: LocalDate,
+    var dataFim: LocalDate,
+    var checkIn: LocalDateTime?,
+    var checkOut: LocalDateTime?,
+    var preco: Double,
+    var ativa: Boolean) {
 
     companion object {
 

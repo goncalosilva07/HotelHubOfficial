@@ -1,11 +1,14 @@
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
+import kotlinx.serialization.Serializable
 import java.util.*
-
+@Serializable
 class Horario (
     var id: String,
-    var diaSemana: String,
-    var inicioTurno1: Date,
-    var fimTurno1: Date,
-    var inicioTurno2: Date,
-    var fimTurno2: Date)
+    var diaSemana: Int,
+    var inicioTurno1: LocalTime,
+    var fimTurno1: LocalTime,
+    var inicioTurno2: LocalTime,
+    var fimTurno2: LocalTime)
 {
 }

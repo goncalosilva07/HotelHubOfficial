@@ -73,10 +73,10 @@
             localStorage.removeItem("startDate");
             localStorage.removeItem("endDate");
 
-            $(".name").val(contentHub.userInfo.client.nome == null ? "" : contentHub.userInfo.client.nome);
-            $(".surname").val(contentHub.userInfo.client.apelido == null ? "" : contentHub.userInfo.client.apelido);
-            $(".phoneNumber").val(contentHub.userInfo.client.telefone == null ? "" : contentHub.userInfo.client.telefone);
-            $(".email").val(contentHub.userInfo.client.email == null ? "" : contentHub.userInfo.client.email);
+            $(".name").val(contentHub.userInfo.user.nome == null ? "" : contentHub.userInfo.user.nome);
+            $(".surname").val(contentHub.userInfo.user.apelido == null ? "" : contentHub.userInfo.user.apelido);
+            $(".phoneNumber").val(contentHub.userInfo.user.telefone == null ? "" : contentHub.userInfo.user.telefone);
+            $(".email").val(contentHub.userInfo.user.email == null ? "" : contentHub.userInfo.user.email);
 
         },
     };
@@ -89,7 +89,7 @@
 
             var obj = {
                 idRoom: reserve.idRoom,
-                idClient: contentHub.userInfo.client.id,
+                idClient: contentHub.userInfo.user.id,
                 name: $(".name").val(),
                 surname: $(".surname").val(),
                 phoneNumber: $(".phoneNumber").val(),

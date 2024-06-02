@@ -84,7 +84,7 @@
                 url: "http://127.0.0.1:8080/getRoomServiceInitialData",
                 type: "POST",
                 contentType: "application/json",
-                data: contentHub.userInfo.client.id,
+                data: contentHub.userInfo.user.id,
                 success: function (data) {
                     debugger;
                     roomService.idReserve = data.idReserve;

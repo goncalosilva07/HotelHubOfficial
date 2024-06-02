@@ -2,6 +2,7 @@ package com.hotelhub.plugins.User
 
 import Horario
 import Permissao
+import kotlinx.datetime.LocalDate
 import java.io.File
 import java.util.*
 
@@ -13,13 +14,14 @@ class Employee (id: String,
                 email: String,
                 telefone: String,
                 permissoes: MutableList<Permissao>,
+                isClient: Boolean,
                 var nif: String,
-                var dataDeNascimento: Date,
+                var dataDeNascimento: LocalDate,
                 var genero: String,
                 var salario: Double,
                 var cargo: String,
-                var horario: List<Horario>):
-    Pessoa(id, userName, password, nome, apelido, email, telefone, permissoes, isClient = false)
+                var horario: MutableList<Horario>):
+    Pessoa(id, userName, password, nome, apelido, email, telefone, permissoes, isClient)
 {
 
     override fun register(): Pair<Boolean, String> {
