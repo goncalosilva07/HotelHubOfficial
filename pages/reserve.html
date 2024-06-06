@@ -15,6 +15,16 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+
+                        <div class="col-md-4 userNameDiv">
+                            <div class="form-group">
+                                <label class="form-control-label">Nome de Utilizador</label>
+                                <input class="form-control userName" type="text" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8 userNameDiv"></div>
+
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-control-label">Nome</label>
@@ -29,7 +39,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4"></div>
+                        <div class="col-md-4 designDiv"></div>
 
                         <div class="col-md-4">
                             <div class="form-group">
@@ -69,10 +79,6 @@
             reserve.startDate = localStorage.getItem("startDate");
             reserve.endDate = localStorage.getItem("endDate");
 
-            localStorage.removeItem("idRoom");
-            localStorage.removeItem("startDate");
-            localStorage.removeItem("endDate");
-
             $(".name").val(contentHub.userInfo.user.nome == null ? "" : contentHub.userInfo.user.nome);
             $(".surname").val(contentHub.userInfo.user.apelido == null ? "" : contentHub.userInfo.user.apelido);
             $(".phoneNumber").val(contentHub.userInfo.user.telefone == null ? "" : contentHub.userInfo.user.telefone);
@@ -83,13 +89,19 @@
 
     $(document).ready(function () {
         debugger;
+
+        if (contentHub.userInfo.user.isClient){
+            $(".userNameDiv").remove();
+        }else{
+
         reserve.getReserveInitialData();
 
         $(".reserveBtn").on("click", function (e) {
 
             var obj = {
                 idRoom: reserve.idRoom,
-                idClient: contentHub.userInfo.user.id,
+                idClient: contentHub.userInfo.user.isClient == true ? contentHub.userInfo.user.id : null,
+                clientUserName: contentHub.userInfo.user.isClient == false ? $(".userName").val() : null,
                 name: $(".name").val(),
                 surname: $(".surname").val(),
                 phoneNumber: $(".phoneNumber").val(),

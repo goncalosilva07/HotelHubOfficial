@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Gestão de Permissões</h6>
+                </div>
+            </div>
+            <div class="card-body roomServiceCardBody">
+                <div class="row">
+
+                    <div class="col-md-4 reserveNumberDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Nome de Utilizador</label>
+                            <input class="form-control userName" type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="margin-top: 31px">
+                        <button type="button" class="button-3 getUserPermissionsBtn" style="height: 38.5px;">Procurar</button>
+                    </div>
+
+                    <div class="col-md-5"></div>
+
+                    <div class="col-md-4 permissionsDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Permissão</label>
+                            <select class="form-control permissions"></select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3 permissionsDiv" style="margin-top: 31px">
+                        <button type="button" class="button-3 addProduct" style="height: 38.5px;">Adicionar</button>
+                    </div>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="permissionsTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Utilizador</th>
+                                <th>Permissão</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="col-md-2" style="margin-top: 20px">
+                        <button type="button" class="button-3 addRoomService" style="height: 38.5px; width: 100%">Finalizar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var usersPermissionsManagement = {
+        table: null,
+        tableData: [],
+        userName: null,
+
+        getUserPermissions: function (){
+
+            var userName = $(".userName").val();
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getUserPermissions",
+                type: "POST",
+                contentType: "application/json",
+                data: userName,
+                success: function (data) {
+
+                    usersPermissionsManagement.userName = userName;
+
+                    $.each(contentHub.userInfo.permissionsList, function( key, value ) {
+                        if(data.find(x => x.id == value.id)) {
+                            debugger;
+                            var obj = {
+                                id: value.id,
+                                name: value.nome,
+                                userName: userName
+                            }
+
+                            usersPermissionsManagement.tableData.push(obj);
+                        }
+                    });
+
+                    usersPermissionsManagement.updateTable();
+
+                    $(".permissionsDiv").show();
+
+                    var dataSelect2 = $.map(contentHub.userInfo.permissionsList, function (obj) {
+                        obj.text = obj.nome;
+                        return obj;
+                    });
+
+                    $('.permissions').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione uma permissão",
+                        allowClear: true,
+                        data: dataSelect2
+                    });
+
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            usersPermissionsManagement.table.clear().rows.add(usersPermissionsManagement.tableData).draw();
+        },
+
+        addPermission: function () {
+            debugger;
+            var idProduct = $(".products").select2("data")[0].id;
+
+            if (roomService.tableData.find(x => x.idProduct == idProduct) == null) {
+
+
+                var textProduct = $(".products").select2("data")[0].text;
+                var priceProduct = $(".products").select2("data")[0].price;
+
+                var quantityProduct = $(".productQuantity").val();
+                priceProduct = quantityProduct * priceProduct;
+
+                var obj = {
+                    idProduct: idProduct,
+                    textProduct: textProduct,
+                    quantityProduct: quantityProduct,
+                    priceProduct: priceProduct.toFixed(2),
+                }
+
+                roomService.tableData.push(obj);
+                roomService.updateTable();
+                $(".productQuantity").val(1);
+            }else{
+                alert("Produto já inserido!")
+            }
+            //roomService.table.clear().rows.add(roomService.tableData).draw();
+
+        },
+
+        removePermission: function (id){
+            debugger;
+            var data = roomService.tableData.find(x => x.idProduct != id);
+            roomService.tableData = [];
+            if (data != null){
+                roomService.tableData.push(data);
+            }
+            roomService.updateTable();
+        },
+
+    };
+
+    $(document).ready(function () {
+
+        $(".permissionsDiv").hide();
+
+        usersPermissionsManagement.table = $('#permissionsTable').DataTable({
+            data: usersPermissionsManagement.tableData,
+            columns: [
+                { data: "userName" },
+                { data: "name" },
+            ],
+            columnDefs: [
+                {
+                    "targets": 2,
+                    "render": function(data, type, row, meta) {
+                        return '<span class="material-symbols-outlined removeProduct" id="' + row.id + '"> delete </span>'
+                    }
+                },
+
+            ],
+
+        });
+
+        $(".getUserPermissionsBtn").on("click", function (e) {
+            usersPermissionsManagement.getUserPermissions();
+        });
+
+
+        $(".addProduct").on("click", function (e) {
+           roomService.addProduct();
+        });
+
+        $(document).on('click', '.removeProduct', function(e) {
+            var id = e.target.id;
+            roomService.removeProduct(id);
+        });
+
+        $(".addRoomService").on("click", function (e) {
+            if (contentHub.userInfo.user.isClient)
+                roomService.addRoomServiceClient();
+            else
+                roomService.addRoomServiceEmployee();
+        });
+    });
+
+</script>

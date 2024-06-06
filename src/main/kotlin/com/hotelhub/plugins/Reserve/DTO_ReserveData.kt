@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DTO_ReserveData(val idRoom: Int,
-                           val idClient: String,
+                           var idClient: String?,
+                           val clientUserName: String?,
                            val name: String,
                            val surname: String,
                            val email: String,

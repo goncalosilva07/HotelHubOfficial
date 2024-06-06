@@ -51,14 +51,37 @@ class Employee (id: String,
         return Pair(false, "Erro")
     }
 
+    companion object {
+
+        fun createEmployee(employeeData: DTO_Employee): Pair<Boolean, String>{
+
+            try {
+                var erro: Boolean = false
+
+                val employee = Employee("", employeeData.userName, employeeData.password, employeeData.nome!!,
+                    employeeData.apelido!!, employeeData.email!!, employeeData.telefone!!, mutableListOf(), false, employeeData.nif,
+                    employeeData.dataDeNascimento, employeeData.genero, employeeData.salario, employeeData.cargo, mutableListOf())
+
+                employee.verifyUserName(employee.userName)
+                employee.generateCode("users.txt")
+
+                val fileUsersDB = "users.txt"
+                val fileUsers = File("db/$fileUsersDB")
+
+                fileUsers.appendText("${employee.id}|${employee.userName}|${employee.password}|${employee.nome}|${employee.apelido}|${employee.email}|${employee.telefone}|true\n")
+
+                val fileEmployeeDB = "funcionarios.txt"
+                val fileEmployee = File("db/$fileEmployeeDB")
+
+                fileEmployee.appendText("${employee.id}|${employee.nif}|${employee.dataDeNascimento}|${employee.genero}|${employee.salario}|${employee.cargo}\n")
+
+                return Pair(true, "Dados inseridos com sucesso!")
+
+            }catch (e: Exception){
+                return Pair(true, e.toString())
+            }
+        }
+    }
+
 }
 
-/*
-class com.hotelhub.plugins.User.Employee (var nome: String, var nif: Int,
-                         var dataDeNascimento: Date, var genero: String, var salario: Double,
-                         var email: String, var telefone: Int, var cargo: String){
-
-
-
-}
- */

@@ -7,3 +7,4 @@ SRPM|diogo|12345|null|null|null|null|true
 STLB|aaaa|123456|null|null|null|null|true
 QKTD|admin|123456|null|null|null|null|false
 YGXA|contaTeste|123456|null|null|null|null|true
+LBIU|schmurro|123456|Pedro|Ferreira|pedroemanuelmacedoferreira@gmail.com|91777|true

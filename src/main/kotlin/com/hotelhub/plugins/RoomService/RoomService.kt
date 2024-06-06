@@ -16,33 +16,45 @@ class RoomService(val id: String,
 
     companion object {
 
-        fun getRoomServiceInitialData(idUser: String): Pair<Boolean, Any>{
+        fun getRoomServiceInitialDataClient(idClient: String): Pair<Boolean, Any>{
 
-            val fileReserveDB = "reserva.txt"
-            val fileReserve = File("db/$fileReserveDB")
 
-            for (reserve in fileReserve.readLines()) {
-                val reserveSplit = reserve.split("|");
-                val menuList: MutableList<DTO_MenuRoomService> = mutableListOf()
-                val current = LocalDate.now()
+                val fileReserveDB = "reserva.txt"
+                val fileReserve = File("db/$fileReserveDB")
 
-                if (reserveSplit[1] == idUser && LocalDate.parse(reserveSplit[3]) <= current && LocalDate.parse(reserveSplit[4]) >= current && reserveSplit[8].toBoolean()){
-                    val idReserve: String = reserveSplit[0]
-                    val fileMenuDB = "menu.txt"
-                    val fileMenu = File("db/$fileMenuDB")
+                for (reserve in fileReserve.readLines()) {
+                    val reserveSplit = reserve.split("|");
+                    val menuList: MutableList<DTO_MenuRoomService> = mutableListOf()
+                    val current = LocalDate.now()
 
-                    for (item in fileMenu.readLines()) {
-                        val itemSplit = item.split("|");
+                    if (reserveSplit[1] == idClient && LocalDate.parse(reserveSplit[3]) <= current && LocalDate.parse(
+                            reserveSplit[4]
+                        ) >= current && reserveSplit[8].toBoolean()
+                    ) {
+                        val idReserve: String = reserveSplit[0]
+                        val fileMenuDB = "menu.txt"
+                        val fileMenu = File("db/$fileMenuDB")
 
-                        menuList.add(DTO_MenuRoomService(itemSplit[0].toInt(), itemSplit[1], itemSplit[2].toDouble()))
+                        for (item in fileMenu.readLines()) {
+                            val itemSplit = item.split("|");
+
+                            menuList.add(
+                                DTO_MenuRoomService(
+                                    itemSplit[0].toInt(),
+                                    itemSplit[1],
+                                    itemSplit[2].toDouble()
+                                )
+                            )
+                        }
+                        return Pair(true, DTO_GetRoomServiceInitialData(idReserve, menuList))
                     }
-                    return Pair(true, DTO_GetRoomServiceInitialData(idReserve, menuList))
                 }
-            }
-            return Pair(false, "Erro! Utilizador Sem Reserva.")
+                return Pair(false, "Erro! Utilizador Sem Reserva.")
+
+
         }
 
-        fun createRoomService(data: DTO_CreateRoomService): Pair<Boolean, String>{
+        fun createRoomServiceClient(data: DTO_CreateRoomService): Pair<Boolean, String>{
 
             val fileRoomServiceDB = "servico_quartos.txt"
             val fileRoomService = File("db/$fileRoomServiceDB")
@@ -74,6 +86,79 @@ class RoomService(val id: String,
             }else{
                 return Pair(false, "Erro ao efetuar o pedido!")
             }
+        }
+
+        fun createRoomServiceEmployee(data: DTO_CreateRoomService): Pair<Boolean, String>{
+
+            val fileReserveDB = "reserva.txt"
+            val fileReserve = File("db/$fileReserveDB")
+
+            for (reserve in fileReserve.readLines()) {
+                val reserveSplit = reserve.split("|");
+                val current = LocalDate.now()
+
+                if (reserveSplit[0] == data.idReserve && LocalDate.parse(reserveSplit[3]) <= current && LocalDate.parse(
+                        reserveSplit[4]
+                    ) >= current && reserveSplit[8].toBoolean()
+                ) {
+
+                    val fileRoomServiceDB = "servico_quartos.txt"
+                    val fileRoomService = File("db/$fileRoomServiceDB")
+
+                    val fileMenuDB = "menu.txt"
+                    val fileMenu = File("db/$fileMenuDB")
+
+                    val menuList: MutableList<DTO_MenuRoomService> = mutableListOf()
+
+                    for (item in fileMenu.readLines()) {
+                        val itemSplit = item.split("|");
+
+                        menuList.add(DTO_MenuRoomService(itemSplit[0].toInt(), itemSplit[1], itemSplit[2].toDouble()))
+                    }
+
+                    var wroteFile: Boolean = false
+
+                    for (product in data.products){
+
+                        val productInfo = menuList.find { it.id == product.idProduct }
+                        val totalPrice = productInfo!!.price * product.quantity
+
+                        fileRoomService.appendText("${data.idReserve}|${product.idProduct}|${product.quantity}|$totalPrice\n")
+                        wroteFile = true
+                    }
+
+                    if (wroteFile){
+                        return Pair(true, "Pedido efetuado com sucesso!")
+                    }else{
+                        return Pair(false, "Erro ao efetuar o pedido!")
+                    }
+
+                }
+            }
+            return Pair(false, "Erro! Reserva inválida.")
+
+        }
+
+        fun getRoomServiceMenu(): MutableList<DTO_MenuRoomService>{
+
+            val fileMenuDB = "menu.txt"
+            val fileMenu = File("db/$fileMenuDB")
+
+            val menuList: MutableList<DTO_MenuRoomService> = mutableListOf()
+
+            for (item in fileMenu.readLines()) {
+                val itemSplit = item.split("|");
+
+                menuList.add(
+                    DTO_MenuRoomService(
+                        itemSplit[0].toInt(),
+                        itemSplit[1],
+                        itemSplit[2].toDouble()
+                    )
+                )
+            }
+
+            return menuList
         }
 
     }

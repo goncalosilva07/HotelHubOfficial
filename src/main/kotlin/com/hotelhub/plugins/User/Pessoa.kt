@@ -163,6 +163,39 @@ abstract class Pessoa(
             return permissionsList
         }
 
+        fun getUserPermissionsByUserName(userName: String): Pair<Boolean,MutableList<Permissao>>{
+            var idUser: String = ""
+
+            val fileUserDB = "users.txt"
+            val fileUser = File("db/$fileUserDB")
+
+            for (user in fileUser.readLines()){
+                val userSplit = user.split("|")
+
+                if (userSplit[1] == userName){
+                    idUser = userSplit[0]
+                    break;
+                }
+            }
+
+            if (idUser != "") {
+                val filePermissionsDB = "permissoes_utilizador.txt"
+                val filePermissions = File("db/$filePermissionsDB")
+
+                var permissionsList: MutableList<Permissao> = mutableListOf()
+
+                for (permission in filePermissions.readLines()) {
+                    val permissionSplit = permission.split("|");
+                    if (permissionSplit[0] == idUser) {
+                        permissionsList.add(Permissao(permissionSplit[1].toInt(), "", "", ""))
+                    }
+                }
+                return Pair(true, permissionsList)
+            }
+            return Pair(false, mutableListOf())
+
+        }
+
         fun recognizeUser(id:String, userName: String, enc: String): Pair<Boolean, String>{
             val message = "${id}_${userName}"
             val sha256Digest = MessageDigest.getInstance("SHA-256").digest(message.toByteArray())

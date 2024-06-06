@@ -27,6 +27,13 @@
             <div class="card-body roomServiceCardBody">
                 <div class="row">
 
+                    <div class="col-md-4 reserveNumberDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Nº Reserva</label>
+                            <input class="form-control reserveNumber" type="text" required>
+                        </div>
+                    </div>
+
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Produto</label>
@@ -78,10 +85,48 @@
         table: null,
         tableData: [],
 
-        getRoomServiceInitialData: function () {
+        getRoomServiceInitialDataEmployee: function () {
+
+            var obj = {
+                idClient: contentHub.userInfo.user.isClient == false ? null : contentHub.userInfo.user.id,
+                clientUserName: contentHub.userInfo.user.isClient == false ? $(".userName").val() : null,
+                isClient: contentHub.userInfo.user.isClient
+            }
 
             $.ajax({
                 url: "http://127.0.0.1:8080/getRoomServiceInitialData",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    debugger;
+                    roomService.idReserve = data.idReserve;
+                    roomService.menu = data.menu;
+
+                    var dataSelect2 = $.map(roomService.menu, function (obj) {
+                        obj.text = obj.name;
+                        return obj;
+                    });
+
+                    $('.products').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione um produto",
+                        allowClear: true,
+                        data: dataSelect2
+                    });
+
+                    $(".productQuantity").val(1);
+
+                },
+                error: function (data) {
+                    //$(".roomServiceCardBody").html('<div class="col-md-12" style="text-align: center; margin-top: 5vh; margin-bottom: 5vh;"><span>SEM RESERVAS</span></div>');
+                }
+            });
+        },
+
+        getRoomServiceInitialDataClient: function () {
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getRoomServiceInitialDataClient",
                 type: "POST",
                 contentType: "application/json",
                 data: contentHub.userInfo.user.id,
@@ -106,6 +151,37 @@
                 },
                 error: function (data) {
                     $(".roomServiceCardBody").html('<div class="col-md-12" style="text-align: center; margin-top: 5vh; margin-bottom: 5vh;"><span>SEM RESERVAS</span></div>');
+                }
+            });
+        },
+
+        getRoomServiceMenu: function () {
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getRoomServiceMenu",
+                type: "POST",
+                contentType: "application/json",
+                data: null,
+                success: function (data) {
+
+                    roomService.menu = data;
+
+                    var dataSelect2 = $.map(roomService.menu, function (obj) {
+                        obj.text = obj.name;
+                        return obj;
+                    });
+
+                    $('.products').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione um produto",
+                        allowClear: true,
+                        data: dataSelect2
+                    });
+
+                    $(".productQuantity").val(1);
+
+                },
+                error: function (data) {
+                    alert("Erro! " + data);
                 }
             });
         },
@@ -154,7 +230,7 @@
             roomService.updateTable();
         },
 
-        addRoomService: function (){
+        addRoomServiceClient: function (){
 
             var products = [];
 
@@ -173,7 +249,7 @@
             }
 
             $.ajax({
-                url: "http://127.0.0.1:8080/createRoomServiceInitialData",
+                url: "http://127.0.0.1:8080/createRoomServiceInitialDataClient",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(obj),
@@ -185,6 +261,44 @@
                     alert(data.responseText);
                 }
             });
+        },
+
+        addRoomServiceEmployee: function (){
+
+            var products = [];
+
+            $.each(roomService.tableData, function(i, data){
+                debugger;
+                var obj = {
+                    idProduct: data.idProduct,
+                    quantity: data.quantityProduct
+                }
+                products.push(obj);
+            });
+
+            var obj = {
+                idReserve: $(".reserveNumber").val(),
+                products: products
+            }
+
+            if (obj.idReserve != ""){
+                $.ajax({
+                    url: "http://127.0.0.1:8080/createRoomServiceInitialDataEmployee",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(obj),
+                    success: function (data) {
+                        alert(data);
+                        $(".contentHubInjection").load("/dashboard");
+                    },
+                    error: function (data) {
+                        alert(data.responseText);
+                    }
+                });
+            }else{
+                alert("O número da reserva tem de ser preenchido!");
+            }
+
         },
     };
 
@@ -213,7 +327,14 @@
         ],
         });
 
-        roomService.getRoomServiceInitialData();
+        if (contentHub.userInfo.user.isClient){
+            $(".reserveNumberDiv").remove();
+            roomService.getRoomServiceInitialDataClient();
+        }
+        else
+            roomService.getRoomServiceMenu();
+
+        //roomService.getRoomServiceInitialDataEmployee();
 
         $(".addProduct").on("click", function (e) {
            roomService.addProduct();
@@ -225,7 +346,10 @@
         });
 
         $(".addRoomService").on("click", function (e) {
-            roomService.addRoomService();
+            if (contentHub.userInfo.user.isClient)
+                roomService.addRoomServiceClient();
+            else
+                roomService.addRoomServiceEmployee();
         });
     });
 

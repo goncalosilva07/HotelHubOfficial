@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+</style>
+<body>
+    <div class="row mt-4">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Check-in e Check-out</h6>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Ação</label>
+                                <select class="form-control selectAction">
+                                    <option selected="selected">Check-In</option>
+                                    <option>Check-Out</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Nº Reserva</label>
+                                <input class="form-control reserveNumber" type="text" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6"></div>
+
+                        <div class="col-md-3">
+                            <button type="button" class="button-3 submitCheckInOrCheckOutBtn">Concluir</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var checkInAndCheckOut = {
+
+        submitCheckInOrCheckOut: function (){
+
+            var obj = {
+                idReserve: $(".reserveNumber").val(),
+                action: $(".selectAction").val() == "Check-In" ? 1 : 2
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/updateCheckInAndCheckOut",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+    };
+
+    $(document).ready(function () {
+
+        $('.selectAction').select2({
+            allowClear: true,
+        });
+
+        $(".submitCheckInOrCheckOutBtn").on("click", function (e) {
+            checkInAndCheckOut.submitCheckInOrCheckOut();
+        });
+
+    });
+</script>

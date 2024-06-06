@@ -1,18 +1,24 @@
 package com.hotelhub.plugins
-import com.hotelhub.plugins.RoomService.RoomService.Companion.getRoomServiceInitialData
 
 
 import CaracteristicaQuarto
 import Permissao
 import Quarto.Companion.getAvailableRooms
+import com.hotelhub.plugins.Reserve.DTO_CheckInOrCheckOut
 import com.hotelhub.plugins.Reserve.Reserva.Companion.createReserve
 import com.hotelhub.plugins.Reserve.DTO_DataSerchRoomsForReserve
 import com.hotelhub.plugins.Reserve.DTO_ReserveData
+import com.hotelhub.plugins.Reserve.Reserva.Companion.updateCheckInAndCheckOut
 import com.hotelhub.plugins.RoomService.DTO_CreateRoomService
 import com.hotelhub.plugins.RoomService.DTO_GetRoomServiceInitialData
-import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomService
+import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomServiceClient
+import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomServiceEmployee
+import com.hotelhub.plugins.RoomService.RoomService.Companion.getRoomServiceInitialDataClient
+import com.hotelhub.plugins.RoomService.RoomService.Companion.getRoomServiceMenu
 import com.hotelhub.plugins.User.*
 import com.hotelhub.plugins.User.Cliente.Companion.getClientDashBoardInitialData
+import com.hotelhub.plugins.User.Employee.Companion.createEmployee
+import com.hotelhub.plugins.User.Pessoa.Companion.getUserPermissionsByUserName
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
@@ -73,6 +79,18 @@ fun Application.configureRouting() {
 
         get("/roomService") {
             call.respondFile(File("pages/roomService.html"))
+        }
+
+        get("/createEmployee") {
+            call.respondFile(File("pages/createEmployee.html"))
+        }
+
+        get("/checkInAndCheckOut") {
+            call.respondFile(File("pages/checkInAndCheckOut.html"))
+        }
+
+        get("/usersPermissionsManagement") {
+            call.respondFile(File("pages/usersPermissionsManagement.html"))
         }
 
         /* ************************** METHODS ************************** */
@@ -228,11 +246,12 @@ fun Application.configureRouting() {
             }
         }
 
-        post("/getRoomServiceInitialData") {
+        post("/getRoomServiceInitialDataClient") {
             try {
                 val jsonData = call.receive<String>()
                 val idUser: String = jsonData
-                val responseData = getRoomServiceInitialData(idUser)
+                //val data = Json.decodeFromString<DTO_SentInfoFromCreateServiceRoom>(jsonData)
+                val responseData = getRoomServiceInitialDataClient(idUser)
 
                 if (responseData.first){
 
@@ -251,11 +270,38 @@ fun Application.configureRouting() {
             }
         }
 
-        post("/createRoomServiceInitialData") {
+        post("/getRoomServiceMenu") {
+            try {
+                val menuList = getRoomServiceMenu()
+
+                val json = Json.encodeToString(menuList)
+                call.respondText(json, ContentType.Application.Json)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/createRoomServiceInitialDataClient") {
             try {
                 val jsonData = call.receive<String>()
                 val data = Json.decodeFromString<DTO_CreateRoomService>(jsonData)
-                val responseData = createRoomService(data)
+                val responseData = createRoomServiceClient(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.Created)
+                }else{
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/createRoomServiceInitialDataEmployee") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_CreateRoomService>(jsonData)
+                val responseData = createRoomServiceEmployee(data)
 
                 if (responseData.first){
                     call.respondText(responseData.second.toString(), status = HttpStatusCode.Created)
@@ -275,6 +321,58 @@ fun Application.configureRouting() {
 
                 val json = Json.encodeToString(responseData)
                 call.respondText(json, ContentType.Application.Json)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/createEmployee") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_Employee>(jsonData)
+                val responseData = createEmployee(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.Created)
+                }else{
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.InternalServerError)
+                }
+
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/updateCheckInAndCheckOut") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_CheckInOrCheckOut>(jsonData)
+                val responseData = updateCheckInAndCheckOut(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.OK)
+                }else{
+                    call.respondText(responseData.second.toString(), status = HttpStatusCode.InternalServerError)
+                }
+
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getUserPermissions") {
+            try {
+                val jsonData = call.receive<String>()
+                val userName: String = jsonData
+                val responseData = getUserPermissionsByUserName(userName)
+
+                if (responseData.first){
+                    val json = Json.encodeToString(responseData.second)
+                    call.respondText(json, ContentType.Application.Json)
+                }else{
+                    call.respondText("Erro! Utilizador inválido.", status = HttpStatusCode.InternalServerError)
+                }
+
             }catch (exception: Exception){
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
             }

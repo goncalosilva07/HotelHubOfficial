@@ -148,7 +148,10 @@
 
     $(document).ready(function () {
 
-        dashboard.getClientDashBoardInitialData();
+        if (contentHub.userInfo.user.isClient){
+            dashboard.getClientDashBoardInitialData();
+        }
+
 
 
     });

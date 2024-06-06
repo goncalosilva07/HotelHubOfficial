@@ -26934,6 +26934,18 @@ pre[class*="language-"] {
 
 /*# sourceMappingURL=dashboard-free.css.map */
 
+.select2-container .select2-selection--single {
+    height: 38px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+}
+
+.select2-selection__arrow{
+    height: 35px !important;
+}
+
 .user-info {
     margin-top: 1vh;
 }

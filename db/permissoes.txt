@@ -2,3 +2,4 @@
 2|Pedir Serviço de Quarto|Possibilita o utilizador de fazer pedidos de serviço de quarto|room_service
 3|Criar Funcionário|Possibilta o utilizador criar um funcionário|person_add
 4|Check-In e Check-Out|Possibilta o utilizador criar um funcionário|sync_alt
+5|Gestão de Permissões|Possibilta o utilizador de gerir as permissões dos funcionários|manage_accounts

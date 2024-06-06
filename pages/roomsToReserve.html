@@ -82,6 +82,7 @@
         roomFeatures: null,
         startDate: null,
         endDate: null,
+        awaitResponse: false,
 
         getRoomsToReserveInitialData: function () {
 
@@ -223,13 +224,16 @@
         });
 
         $(document).on('click', '.doReserve', function(e) {
-            debugger;
-            var idRoom = e.target.value;
-            localStorage.setItem("idRoom", idRoom);
-            localStorage.setItem("startDate", roomsToReserve.startDate);
-            localStorage.setItem("endDate", roomsToReserve.endDate);
+            if (roomsToReserve.awaitResponse == false){
+                roomsToReserve.awaitResponse = true;
+                debugger;
+                var idRoom = e.target.value;
+                localStorage.setItem("idRoom", idRoom);
+                localStorage.setItem("startDate", roomsToReserve.startDate);
+                localStorage.setItem("endDate", roomsToReserve.endDate);
 
-            $(".contentHubInjection").load("/reserve");
+                $(".contentHubInjection").load("/reserve");
+            }
         });
     });
 
