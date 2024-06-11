@@ -1,10 +1,8 @@
 package com.hotelhub.plugins.User
 
-import Permissao
+import com.hotelhub.plugins.Permission.Permissao
 import java.io.File
 import java.security.MessageDigest
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.random.Random
 import kotlinx.datetime.LocalDate
 

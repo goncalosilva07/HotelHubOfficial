@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Gestão de Tarefas</h6>
+                </div>
+            </div>
+            <div class="card-body roomServiceCardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Nome de Utilizador</label>
+                            <input class="form-control userName" type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="margin-top: 31px">
+                        <button type="button" class="button-3 getUserTasksBtn" style="height: 38.5px;">Procurar</button>
+                    </div>
+
+                    <div class="col-md-5"></div>
+
+                    <div class="col-md-3 taskDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Tarefa</label>
+                            <input class="form-control title" type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 taskDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Descrição</label>
+                            <input class="form-control description" type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 taskDiv">
+                        <button type="button" class="button-3 addTask" style="height: 38.5px;">Adicionar</button>
+                    </div>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="tasksTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Utilizador</th>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Data</th>
+                                <th>Concluída</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="col-md-2" style="margin-top: 20px">
+                        <button type="button" class="button-3 submitTasks" style="height: 38.5px; width: 100%">Finalizar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var tasksManagement = {
+        table: null,
+        tableData: [],
+        userName: null,
+
+        getUserTasks: function (){
+
+            var userName = $(".userName").val();
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getUserTasks",
+                type: "POST",
+                contentType: "application/json",
+                data: userName,
+                success: function (data) {
+                    debugger;
+                    tasksManagement.tableData = [];
+                    tasksManagement.userName = userName;
+
+                    tasksManagement.tableData = data;
+
+
+                    tasksManagement.updateTable();
+
+                    $(".taskDiv").show();
+
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            tasksManagement.table.clear().rows.add(tasksManagement.tableData).draw();
+        },
+
+        addTask: function () {
+            debugger;
+            var title = $(".title").val();
+            var description = $(".description").val();
+
+
+            var obj = {
+                id: "",
+                user: tasksManagement.userName,
+                title: title,
+                description: description,
+                dateTime: moment(new Date()).format('DD/MM/YYYY HH:mm:ss'),
+                isConcluded: false
+            }
+
+            tasksManagement.tableData.push(obj);
+            tasksManagement.updateTable();
+        },
+
+        removeTask: function (id){
+            debugger;
+            var data = tasksManagement.tableData.filter(x => x.dateTime != id);
+            tasksManagement.tableData = [];
+            if (data != null){
+                $.each(data, function (index, value){
+                    tasksManagement.tableData.push(value);
+                });
+            }
+            tasksManagement.updateTable();
+        },
+
+        submitTasks: function (){
+            debugger;
+
+            var tasks = [];
+
+            $.each(tasksManagement.tableData, function (index, value){
+
+                var obj = {
+                    dateTime: null,
+                    dateTimeString: value.dateTime,
+                    description: value.description,
+                    id: value.id,
+                    isConcluded: false,
+                    title: value.title,
+                    user: value.user
+                }
+
+                tasks.push(obj);
+            });
+
+            var obj = {
+                userName: tasksManagement.userName,
+                tasks: tasks
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/updateUserTasks",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        },
+    };
+
+    $(document).ready(function () {
+
+        $(".taskDiv").hide();
+
+        tasksManagement.table = $('#tasksTable').DataTable({
+            data: tasksManagement.tableData,
+            columns: [
+                { data: "user" },
+                { data: "title" },
+                { data: "description" },
+                { data: "dateTimeString" },
+                { data: "isConcluded" }
+            ],
+            columnDefs: [
+                {
+                    "targets": 5,
+                    "render": function(data, type, row, meta) {
+                        return '<span class="material-symbols-outlined removeTask" id="' + row.dateTime + '"> delete </span>'
+                    }
+                },
+                {
+                    "targets": 0,
+                    "render": function(data, type, row, meta) {
+                        return tasksManagement.userName
+                    }
+                },
+                {
+                    "targets": 3,
+                    "render": function(data, type, row, meta) {
+                        var momentObject = moment(row.dateTime);
+                        var customFormattedDateTime = momentObject.format('DD/MM/YYYY HH:mm:ss');
+
+                        return customFormattedDateTime
+                    }
+                },
+                {
+                    "targets": 4,
+                    "render": function(data, type, row, meta) {
+                        if (row.isConcluded){
+                            return "Sim"
+                        }else{
+                            return "Não"
+                        }
+                    }
+                },
+
+            ],
+
+        });
+
+
+        $(".getUserTasksBtn").on("click", function (e) {
+            tasksManagement.getUserTasks();
+        });
+
+
+        $(".addTask").on("click", function (e) {
+            tasksManagement.addTask();
+        });
+
+        $(document).on('click', '.removeTask', function(e) {
+            var dateTime = e.target.id;
+            tasksManagement.removeTask(dateTime);
+        });
+
+        $(".submitTasks").on("click", function (e) {
+            tasksManagement.submitTasks();
+        });
+
+
+    });
+
+</script>

@@ -1,10 +1,17 @@
 package com.hotelhub.plugins.User
 
 import Horario
-import Permissao
+import com.hotelhub.plugins.Dashboard.DTO_GetDashboardInitialData
+import com.hotelhub.plugins.Dashboard.DTO_GetEmployeeDashboardInitialData
+import com.hotelhub.plugins.Permission.Permissao
+import com.hotelhub.plugins.Reserve.Reserva
+import com.hotelhub.plugins.RoomService.DTO_GetRoomServiceDashboard
+import com.hotelhub.plugins.RoomService.DTO_MenuRoomService
+import com.hotelhub.plugins.Task.Task
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.toLocalDateTime
 import java.io.File
-import java.util.*
 
 class Employee (id: String,
                 userName: String,
@@ -68,7 +75,7 @@ class Employee (id: String,
                 val fileUsersDB = "users.txt"
                 val fileUsers = File("db/$fileUsersDB")
 
-                fileUsers.appendText("${employee.id}|${employee.userName}|${employee.password}|${employee.nome}|${employee.apelido}|${employee.email}|${employee.telefone}|true\n")
+                fileUsers.appendText("${employee.id}|${employee.userName}|${employee.password}|${employee.nome}|${employee.apelido}|${employee.email}|${employee.telefone}|false\n")
 
                 val fileEmployeeDB = "funcionarios.txt"
                 val fileEmployee = File("db/$fileEmployeeDB")
@@ -80,6 +87,25 @@ class Employee (id: String,
             }catch (e: Exception){
                 return Pair(true, e.toString())
             }
+        }
+
+        fun getEmployeeDashBoardInitialData(idUser: String): DTO_GetEmployeeDashboardInitialData {
+
+            val fileTasksDB = "tarefas.txt"
+            val fileTasks = File("db/$fileTasksDB")
+
+            var tasks: MutableList<Task> = mutableListOf()
+
+            for (task in fileTasks.readLines()){
+                val taskSplit = task.split("|")
+
+                if (taskSplit[1] == idUser){
+                    val newTask = Task(taskSplit[0], taskSplit[1], taskSplit[2], taskSplit[3], taskSplit[4].toLocalDateTime(), "", taskSplit[5].toBoolean())
+                    tasks.add(newTask)
+                }
+            }
+
+            return DTO_GetEmployeeDashboardInitialData(tasks)
         }
     }
 

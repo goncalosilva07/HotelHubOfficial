@@ -49,7 +49,7 @@
 
 
                     <div class="col-md-3 permissionsDiv" style="margin-top: 31px">
-                        <button type="button" class="button-3 addProduct" style="height: 38.5px;">Adicionar</button>
+                        <button type="button" class="button-3 addPermission" style="height: 38.5px;">Adicionar</button>
                     </div>
 
                     <div class="col-md-12" style="margin-top: 20px">
@@ -65,7 +65,7 @@
                     </div>
 
                     <div class="col-md-2" style="margin-top: 20px">
-                        <button type="button" class="button-3 addRoomService" style="height: 38.5px; width: 100%">Finalizar</button>
+                        <button type="button" class="button-3 addPermissions" style="height: 38.5px; width: 100%">Finalizar</button>
                     </div>
 
                 </div>
@@ -94,6 +94,7 @@
                 data: userName,
                 success: function (data) {
 
+                    usersPermissionsManagement.tableData = [];
                     usersPermissionsManagement.userName = userName;
 
                     $.each(contentHub.userInfo.permissionsList, function( key, value ) {
@@ -138,29 +139,22 @@
 
         addPermission: function () {
             debugger;
-            var idProduct = $(".products").select2("data")[0].id;
+            var idPermission = $(".permissions").select2("data")[0].id;
 
-            if (roomService.tableData.find(x => x.idProduct == idProduct) == null) {
+            if (usersPermissionsManagement.tableData.find(x => x.id == idPermission) == null) {
 
-
-                var textProduct = $(".products").select2("data")[0].text;
-                var priceProduct = $(".products").select2("data")[0].price;
-
-                var quantityProduct = $(".productQuantity").val();
-                priceProduct = quantityProduct * priceProduct;
+                var name = $(".permissions").select2("data")[0].text;
 
                 var obj = {
-                    idProduct: idProduct,
-                    textProduct: textProduct,
-                    quantityProduct: quantityProduct,
-                    priceProduct: priceProduct.toFixed(2),
+                    id: idPermission,
+                    userName: usersPermissionsManagement.userName,
+                    name: name,
                 }
 
-                roomService.tableData.push(obj);
-                roomService.updateTable();
-                $(".productQuantity").val(1);
+                usersPermissionsManagement.tableData.push(obj);
+                usersPermissionsManagement.updateTable();
             }else{
-                alert("Produto já inserido!")
+                alert("Permissão já inserida!")
             }
             //roomService.table.clear().rows.add(roomService.tableData).draw();
 
@@ -168,14 +162,49 @@
 
         removePermission: function (id){
             debugger;
-            var data = roomService.tableData.find(x => x.idProduct != id);
-            roomService.tableData = [];
+            var data = usersPermissionsManagement.tableData.filter(x => x.id != id);
+            usersPermissionsManagement.tableData = [];
             if (data != null){
-                roomService.tableData.push(data);
+                $.each(data, function (index, value){
+                    usersPermissionsManagement.tableData.push(value);
+                });
             }
-            roomService.updateTable();
+            usersPermissionsManagement.updateTable();
         },
 
+        addPermissions: function (){
+            debugger;
+            var permissions = [];
+
+            $.each(usersPermissionsManagement.tableData, function(i, data){
+                var obj = {
+                    id: data.id,
+                    nome: null,
+                    descricao: null,
+                    icon: null
+                }
+                permissions.push(obj);
+            });
+
+            var obj = {
+                userName: usersPermissionsManagement.userName,
+                permissions: permissions
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/updateUserPermissions",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        },
     };
 
     $(document).ready(function () {
@@ -192,7 +221,7 @@
                 {
                     "targets": 2,
                     "render": function(data, type, row, meta) {
-                        return '<span class="material-symbols-outlined removeProduct" id="' + row.id + '"> delete </span>'
+                        return '<span class="material-symbols-outlined removePermission" id="' + row.id + '"> delete </span>'
                     }
                 },
 
@@ -205,20 +234,17 @@
         });
 
 
-        $(".addProduct").on("click", function (e) {
-           roomService.addProduct();
+        $(".addPermission").on("click", function (e) {
+            usersPermissionsManagement.addPermission();
         });
 
-        $(document).on('click', '.removeProduct', function(e) {
+        $(document).on('click', '.removePermission', function(e) {
             var id = e.target.id;
-            roomService.removeProduct(id);
+            usersPermissionsManagement.removePermission(id);
         });
 
-        $(".addRoomService").on("click", function (e) {
-            if (contentHub.userInfo.user.isClient)
-                roomService.addRoomServiceClient();
-            else
-                roomService.addRoomServiceEmployee();
+        $(".addPermissions").on("click", function (e) {
+            usersPermissionsManagement.addPermissions();
         });
     });
 

@@ -2,8 +2,10 @@ package com.hotelhub.plugins
 
 
 import CaracteristicaQuarto
-import Permissao
+import com.hotelhub.plugins.Permission.Permissao
 import Quarto.Companion.getAvailableRooms
+import com.hotelhub.plugins.Permission.DTO_UserPermissions
+import com.hotelhub.plugins.Permission.Permissao.Companion.updateUserPermissions
 import com.hotelhub.plugins.Reserve.DTO_CheckInOrCheckOut
 import com.hotelhub.plugins.Reserve.Reserva.Companion.createReserve
 import com.hotelhub.plugins.Reserve.DTO_DataSerchRoomsForReserve
@@ -15,9 +17,14 @@ import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomServiceC
 import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomServiceEmployee
 import com.hotelhub.plugins.RoomService.RoomService.Companion.getRoomServiceInitialDataClient
 import com.hotelhub.plugins.RoomService.RoomService.Companion.getRoomServiceMenu
+import com.hotelhub.plugins.Task.DTO_UserTasks
+import com.hotelhub.plugins.Task.Task
+import com.hotelhub.plugins.Task.Task.Companion.getUserTasksByUserName
+import com.hotelhub.plugins.Task.Task.Companion.updateUserTasks
 import com.hotelhub.plugins.User.*
 import com.hotelhub.plugins.User.Cliente.Companion.getClientDashBoardInitialData
 import com.hotelhub.plugins.User.Employee.Companion.createEmployee
+import com.hotelhub.plugins.User.Employee.Companion.getEmployeeDashBoardInitialData
 import com.hotelhub.plugins.User.Pessoa.Companion.getUserPermissionsByUserName
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -91,6 +98,10 @@ fun Application.configureRouting() {
 
         get("/usersPermissionsManagement") {
             call.respondFile(File("pages/usersPermissionsManagement.html"))
+        }
+
+        get("/tasksManagement") {
+            call.respondFile(File("pages/tasksManagement.html"))
         }
 
         /* ************************** METHODS ************************** */
@@ -326,6 +337,19 @@ fun Application.configureRouting() {
             }
         }
 
+        post("/getEmployeeDashBoardInitialData") {
+            try {
+                val jsonData = call.receive<String>()
+                val idUser: String = jsonData
+                val responseData = getEmployeeDashBoardInitialData(idUser)
+
+                val json = Json.encodeToString(responseData)
+                call.respondText(json, ContentType.Application.Json)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
         post("/createEmployee") {
             try {
                 val jsonData = call.receive<String>()
@@ -377,5 +401,55 @@ fun Application.configureRouting() {
                 call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
             }
         }
+
+        post("/updateUserPermissions") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_UserPermissions>(jsonData)
+                val responseData = updateUserPermissions(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second, status = HttpStatusCode.OK)
+                }else{
+                    call.respondText(responseData.second, status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getUserTasks") {
+            try {
+                val jsonData = call.receive<String>()
+                val userName: String = jsonData
+                val responseData = getUserTasksByUserName(userName)
+
+                if (responseData.first){
+                    val json = Json.encodeToString(responseData.second)
+                    call.respondText(json, ContentType.Application.Json)
+                }else{
+                    call.respondText("Erro! Utilizador inválido.", status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/updateUserTasks") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_UserTasks>(jsonData)
+                val responseData = updateUserTasks(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second, status = HttpStatusCode.OK)
+                }else{
+                    call.respondText(responseData.second, status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
     }
 }

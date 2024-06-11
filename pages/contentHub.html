@@ -49,6 +49,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.11/css/jquery.dataTables.min.css">
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.11/js/jquery.dataTables.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
 </head>
 
 <style>
@@ -304,6 +306,9 @@
                     break;
                 case '5':
                     $(".contentHubInjection").load("/usersPermissionsManagement");
+                    break;
+                case '6':
+                    $(".contentHubInjection").load("/tasksManagement");
                     break;
             }
 

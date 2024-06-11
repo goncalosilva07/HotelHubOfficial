@@ -1,6 +1,6 @@
 package com.hotelhub.plugins.User
 
-import Permissao
+import com.hotelhub.plugins.Permission.Permissao
 import com.hotelhub.plugins.Dashboard.DTO_GetDashboardInitialData
 import com.hotelhub.plugins.Reserve.Reserva
 import com.hotelhub.plugins.RoomService.DTO_GetRoomServiceDashboard

@@ -222,10 +222,13 @@
 
         removeProduct: function (id){
             debugger;
-            var data = roomService.tableData.find(x => x.idProduct != id);
+            var data = roomService.tableData.filter(x => x.idProduct != id);
             roomService.tableData = [];
             if (data != null){
-                roomService.tableData.push(data);
+                debugger;
+                $.each(data, function (index, value){
+                    roomService.tableData.push(value);
+                });
             }
             roomService.updateTable();
         },

@@ -1,7 +1,7 @@
 package com.hotelhub.plugins.User
 
 import Horario
-import Permissao
+import com.hotelhub.plugins.Permission.Permissao
 import kotlinx.serialization.Serializable
 import kotlinx.datetime.LocalDate
 
