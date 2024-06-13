@@ -78,7 +78,7 @@
    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
        <ul class="navbar-nav userPermissionsActivities">
            <li class="nav-item menuOption" id="0">
-               <a class="nav-link active">
+               <a class="nav-link nav-link-permissions active">
                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                        <span class="material-symbols-outlined">dashboard</span>
                    </div>
@@ -91,7 +91,7 @@
    </div>
    <hr class="horizontal dark mt-0">
    <div class="sidenav-footer mx-3 ">
-       <div class="card card-plain shadow-none" id="sidenavCard">
+       <div class="card card-plain shadow-none" id="sidenavCard" style="margin-top: 40px">
            <img class="mx-auto" src="/static/images/userDefault.png" alt="sidebar_illustration" style="width: 35% !important;">
            <div class="card-body text-center p-3 w-100 pt-0">
                <div class="user-info">
@@ -99,8 +99,8 @@
                </div>
            </div>
        </div>
-       <a class="btn btn-secondary btn-sm w-100 logoutBtn" type="button" style="margin-bottom: 0.6rem !important;">Definições</a>
-       <a class="btn btn-danger btn-sm w-100 logoutBtn" type="button" style="margin-bottom: 0.6rem !important;">Logout</a>
+
+       <a class="btn btn-danger btn-sm w-100 logoutBtn" type="button" style="margin-bottom: 0.6rem !important;margin-top: 10px;">Logout</a>
    </div>
 </aside>
 <main class="main-content position-relative border-radius-lg ">
@@ -111,9 +111,9 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
                     <li class="breadcrumb-item text-sm"><a class="opacity-5 text-white">Pages</a></li>
-                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">Dashboard</li>
+                    <li class="breadcrumb-item text-sm text-white active changePageName" aria-current="page">Dashboard</li>
                 </ol>
-                <h6 class="font-weight-bolder text-white mb-0">Dashboard</h6>
+                <h6 class="font-weight-bolder text-white mb-0 changePageName">Dashboard</h6>
             </nav>
         </div>
     </nav>
@@ -226,7 +226,7 @@
                         $.each(data.permissionsList, function( key, value ) {
                             if(data.user.permissoes.find(x => x.id == value.id)) {
                                 htmlToAppend += '<li class="nav-item menuOption" id=' + value.id + '>\n' +
-                                    '                <a class="nav-link">\n' +
+                                    '                <a class="nav-link nav-link-permissions">\n' +
                                     '                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">\n' +
                                     '                        <span class="material-symbols-outlined">' + value.icon + '</span>\n' +
                                     '                    </div>\n' +
@@ -291,26 +291,61 @@
             switch (id){
                 case '0':
                     $(".contentHubInjection").load("/dashboard");
+                    $(".changePageName").html("Dashboard");
                     break;
                 case '1':
                     $(".contentHubInjection").load("/roomsToReserve");
+                    $(".changePageName").html("Reserva");
                     break;
                 case '2':
                     $(".contentHubInjection").load("/roomService");
+                    $(".changePageName").html("Serviço de Quartos");
                     break;
                 case '3':
                     $(".contentHubInjection").load("/createEmployee");
+                    $(".changePageName").html("Criar Funcionário");
                     break;
                 case '4':
                     $(".contentHubInjection").load("/checkInAndCheckOut");
+                    $(".changePageName").html("Check-in e Check-out");
                     break;
                 case '5':
                     $(".contentHubInjection").load("/usersPermissionsManagement");
+                    $(".changePageName").html("Gestão de Permissões");
                     break;
                 case '6':
                     $(".contentHubInjection").load("/tasksManagement");
+                    $(".changePageName").html("Gestão de Tarefas");
+                    break;
+                case '7':
+                    $(".contentHubInjection").load("/dirtyRooms");
+                    $(".changePageName").html("Quartos Sujos");
+                    break;
+                case '8':
+                    $(".contentHubInjection").load("/cleaningLog");
+                    $(".changePageName").html("Registo de Limpeza");
+                    break;
+                case '9':
+                    $(".contentHubInjection").load("/roomsManagement");
+                    $(".changePageName").html("Gestão de Quartos");
+                    break;
+                case '10':
+                    $(".contentHubInjection").load("/characteristicsManagement");
+                    $(".changePageName").html("Gestão de Características");
                     break;
             }
+
+        });
+
+        $(document).on('click', '.nav-link-permissions', function(e) {
+
+            debugger;
+
+           $(".nav-link-permissions.active").removeClass("active");
+
+            e.target.className += " active"
+
+
 
         });
 

@@ -2,8 +2,15 @@ package com.hotelhub.plugins
 
 
 import CaracteristicaQuarto
+import CaracteristicaQuarto.Companion.getRoomCharacteristicsByRoomNumber
+import CaracteristicaQuarto.Companion.updateRoomCharacteristics
 import com.hotelhub.plugins.Permission.Permissao
 import Quarto.Companion.getAvailableRooms
+import Quarto.Companion.getDirtyRooms
+import Quarto.Companion.getRooms
+import Quarto.Companion.updateRooms
+import com.hotelhub.plugins.CleaningLog.CleaningLog.Companion.submitCleaningLog
+import com.hotelhub.plugins.CleaningLog.DTO_SubmitCleaningLog
 import com.hotelhub.plugins.Permission.DTO_UserPermissions
 import com.hotelhub.plugins.Permission.Permissao.Companion.updateUserPermissions
 import com.hotelhub.plugins.Reserve.DTO_CheckInOrCheckOut
@@ -11,6 +18,7 @@ import com.hotelhub.plugins.Reserve.Reserva.Companion.createReserve
 import com.hotelhub.plugins.Reserve.DTO_DataSerchRoomsForReserve
 import com.hotelhub.plugins.Reserve.DTO_ReserveData
 import com.hotelhub.plugins.Reserve.Reserva.Companion.updateCheckInAndCheckOut
+import com.hotelhub.plugins.RoomCharacteristics.DTO_SubmitRoomCharacteristics
 import com.hotelhub.plugins.RoomService.DTO_CreateRoomService
 import com.hotelhub.plugins.RoomService.DTO_GetRoomServiceInitialData
 import com.hotelhub.plugins.RoomService.RoomService.Companion.createRoomServiceClient
@@ -102,6 +110,22 @@ fun Application.configureRouting() {
 
         get("/tasksManagement") {
             call.respondFile(File("pages/tasksManagement.html"))
+        }
+
+        get("/dirtyRooms") {
+            call.respondFile(File("pages/dirtyRooms.html"))
+        }
+
+        get("/cleaningLog") {
+            call.respondFile(File("pages/cleaningLog.html"))
+        }
+
+        get("/roomsManagement") {
+            call.respondFile(File("pages/roomsManagement.html"))
+        }
+
+        get("/characteristicsManagement") {
+            call.respondFile(File("pages/characteristicsManagement.html"))
         }
 
         /* ************************** METHODS ************************** */
@@ -451,5 +475,96 @@ fun Application.configureRouting() {
             }
         }
 
+        post("/getDirtyRooms") {
+            try {
+                val responseData = getDirtyRooms()
+
+                val json = Json.encodeToString(responseData)
+                call.respondText(json, ContentType.Application.Json)
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/submitCleaningLog") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_SubmitCleaningLog>(jsonData)
+                val responseData = submitCleaningLog(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second, status = HttpStatusCode.Created)
+                }else{
+                    call.respondText(responseData.second, status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getRooms") {
+            try {
+                val responseData = getRooms()
+
+                if (responseData.first){
+                    val json = Json.encodeToString(responseData.second)
+                    call.respondText(json, ContentType.Application.Json)
+                }else{
+                    call.respondText("Erro! Tente novamente mais tarde", status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/updateRooms") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_SubmitRooms>(jsonData)
+                val responseData = updateRooms(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second, status = HttpStatusCode.OK)
+                }else{
+                    call.respondText(responseData.second, status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/getRoomCharacteristics") {
+            try {
+                val jsonData = call.receive<String>()
+                val roomNumber: String = jsonData
+                val responseData = getRoomCharacteristicsByRoomNumber(roomNumber.toInt())
+
+                if (responseData.first){
+                    val json = Json.encodeToString(responseData.second)
+                    call.respondText(json, ContentType.Application.Json)
+                }else{
+                    call.respondText("Erro! Quarto não encontrado.", status = HttpStatusCode.InternalServerError)
+                }
+
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
+
+        post("/updateRoomCharacteristics") {
+            try {
+                val jsonData = call.receive<String>()
+                val data = Json.decodeFromString<DTO_SubmitRoomCharacteristics>(jsonData)
+                val responseData = updateRoomCharacteristics(data)
+
+                if (responseData.first){
+                    call.respondText(responseData.second, status = HttpStatusCode.OK)
+                }else{
+                    call.respondText(responseData.second, status = HttpStatusCode.InternalServerError)
+                }
+            }catch (exception: Exception){
+                call.respondText(exception.toString(), status = HttpStatusCode.InternalServerError)
+            }
+        }
     }
 }

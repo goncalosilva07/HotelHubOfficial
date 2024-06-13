@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Gestão de Características</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4 roomNumberDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Nº Quarto</label>
+                            <input class="form-control roomNumber" type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3" style="margin-top: 31px">
+                        <button type="button" class="button-3 getRoomCharacteristicsBtn" style="height: 38.5px;">Procurar</button>
+                    </div>
+
+                    <div class="col-md-5"></div>
+
+                    <div class="col-md-4 characteristicsDiv">
+                        <div class="form-group">
+                            <label class="form-control-label">Característica</label>
+                            <select class="form-control characteristics"></select>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3 characteristicsDiv" style="margin-top: 31px">
+                        <button type="button" class="button-3 addCharacteristic" style="height: 38.5px;">Adicionar</button>
+                    </div>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="characteristicsTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Nº Quarto</th>
+                                <th>Característica</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="col-md-2" style="margin-top: 20px">
+                        <button type="button" class="button-3 addCharacteristics" style="height: 38.5px; width: 100%">Finalizar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var characteristicsManagement = {
+        table: null,
+        tableData: [],
+        roomNumber: null,
+
+        getRoomCharacteristics: function (){
+
+            var roomNumber = $(".roomNumber").val();
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getRoomCharacteristics",
+                type: "POST",
+                contentType: "application/json",
+                data: roomNumber,
+                success: function (data) {
+
+                    characteristicsManagement.tableData = [];
+                    characteristicsManagement.roomNumber = roomNumber;
+                    characteristicsManagement.tableData = data.roomCharacteristics;
+                    characteristicsManagement.updateTable();
+
+                    $(".characteristicsDiv").show();
+
+                    var dataSelect2 = $.map(data.characteristicsList, function (obj) {
+                        obj.text = obj.nome;
+                        return obj;
+                    });
+
+                    $('.characteristics').prepend('<option selected></option>').select2({
+                        placeholder: "Selecione uma característica",
+                        allowClear: true,
+                        data: dataSelect2
+                    });
+
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            characteristicsManagement.table.clear().rows.add(characteristicsManagement.tableData).draw();
+        },
+
+        addCharacteristic: function () {
+            debugger;
+            var idFeature = $(".characteristics").select2("data")[0].id;
+
+            if (characteristicsManagement.tableData.find(x => x.idFeature == idFeature) == null) {
+
+                var name = $(".characteristics").select2("data")[0].text;
+
+                var obj = {
+                    idRoom: characteristicsManagement.roomNumber,
+                    nameFeature: name,
+                    idFeature: idFeature,
+                }
+
+                characteristicsManagement.tableData.push(obj);
+                characteristicsManagement.updateTable();
+            }else{
+                alert("Característica já inserida!")
+            }
+        },
+
+        removeCharacteristic: function (id){
+            debugger;
+            var data = characteristicsManagement.tableData.filter(x => x.idFeature != id);
+            characteristicsManagement.tableData = [];
+            if (data != null){
+                $.each(data, function (index, value){
+                    characteristicsManagement.tableData.push(value);
+                });
+            }
+            characteristicsManagement.updateTable();
+        },
+
+        addCharacteristics: function (){
+            debugger;
+            var characteristics = [];
+
+            $.each(characteristicsManagement.tableData, function(i, data){
+                var obj = {
+                    idRoom: data.idRoom,
+                    idFeature: data.idFeature,
+                    nameFeature: "",
+                }
+                characteristics.push(obj);
+            });
+
+            var obj = {
+                idRoom: characteristicsManagement.roomNumber,
+                roomCharacteristics: characteristics
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/updateRoomCharacteristics",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        },
+    };
+
+    $(document).ready(function () {
+
+        $(".characteristicsDiv").hide();
+
+        characteristicsManagement.table = $('#characteristicsTable').DataTable({
+            data: characteristicsManagement.tableData,
+            columns: [
+                { data: "idRoom" },
+                { data: "nameFeature" },
+            ],
+            columnDefs: [
+                {
+                    "targets": 2,
+                    "render": function(data, type, row, meta) {
+                        return '<span class="material-symbols-outlined removePermission" id="' + row.idFeature + '"> delete </span>'
+                    }
+                },
+
+            ],
+
+        });
+
+        $(".getRoomCharacteristicsBtn").on("click", function (e) {
+            characteristicsManagement.getRoomCharacteristics();
+        });
+
+        $(".addCharacteristic").on("click", function (e) {
+            characteristicsManagement.addCharacteristic();
+        });
+
+        $(document).on('click', '.removePermission', function(e) {
+            var idFeature = e.target.id;
+            characteristicsManagement.removeCharacteristic(idFeature);
+        });
+
+        $(".addCharacteristics").on("click", function (e) {
+            characteristicsManagement.addCharacteristics();
+        });
+    });
+
+</script>

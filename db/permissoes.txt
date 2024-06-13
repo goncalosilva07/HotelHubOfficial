@@ -3,4 +3,8 @@
 3|Criar Funcionário|Possibilta o utilizador criar um funcionário|person_add
 4|Check-In e Check-Out|Possibilta o utilizador criar um funcionário|sync_alt
 5|Gestão de Permissões|Possibilta o utilizador de gerir as permissões dos funcionários|manage_accounts
-6|Adicionar Tarefa|Possibilta o utilizador de adicionar tarefas para outros utilizadores|playlist_add
+6|Gestão de Tarefas|Possibilta o utilizador de gerir as tarefas dos funcionários|reorder
+7|Ver Quartos Sujos|Possibilta o utilizador de ver a lista de quartos sujos|meeting_room
+8|Registo de Limpeza|Possibilta o utilizador de realizar um registo de limpeza de quarto|inventory
+9|Gestão de Quartos|Possibilta o utilizador de gerir os quartos|room_preferences
+10|Gestão de Características|Possibilta o utilizador de gerir as características dos quartos|chair

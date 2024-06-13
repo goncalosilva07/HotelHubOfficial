@@ -1,3 +1,4 @@
+import com.hotelhub.plugins.DTO_SubmitRooms
 import com.hotelhub.plugins.Reserve.DTO_DataSerchRoomsForReserve
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -6,8 +7,8 @@ import java.io.File
 class Quarto(var numero: Int,
              var preco: Double,
              var capacidade: Int,
-             var caracteristicas: List<CaracteristicaQuarto>,
-             var estaLimpeza: Boolean,
+             var caracteristicas: List<CaracteristicaQuarto>?,
+             var sujo: Boolean,
              var estadoManutencao: Boolean,
              var disponibilidade: Boolean) {
 
@@ -131,6 +132,63 @@ class Quarto(var numero: Int,
             return Pair(false ,"Quarto não encontrado")
         }
 
+        fun getDirtyRooms(): MutableList<Quarto>{
+
+            val fileRoomDB = "quartos.txt"
+            val fileRoom = File("db/$fileRoomDB")
+
+            var roomList: MutableList<Quarto> = mutableListOf()
+
+            for (room in fileRoom.readLines()){
+                val roomSplit = room.split("|")
+
+                if (roomSplit[3].toBoolean() == true){
+                    roomList.add(Quarto(roomSplit[0].toInt(),roomSplit[1].toDouble(),roomSplit[2].toInt(), mutableListOf(),roomSplit[3].toBoolean(),roomSplit[4].toBoolean(),roomSplit[5].toBoolean()))
+                }
+            }
+
+            return roomList
+        }
+
+        fun getRooms(): Pair<Boolean, MutableList<Quarto>>{
+
+            try {
+                val fileRoomDB = "quartos.txt"
+                val fileRoom = File("db/$fileRoomDB")
+
+                var roomList: MutableList<Quarto> = mutableListOf()
+
+                for (room in fileRoom.readLines()){
+                    val roomSplit = room.split("|")
+
+                    roomList.add(Quarto(roomSplit[0].toInt(), roomSplit[1].toDouble(), roomSplit[2].toInt(), mutableListOf(),
+                        roomSplit[3].toBoolean(), roomSplit[4].toBoolean(), roomSplit[5].toBoolean()))
+                }
+
+                return Pair(true, roomList)
+            }catch (e: Exception){
+                return Pair(false, mutableListOf())
+            }
+        }
+
+        fun updateRooms(data: DTO_SubmitRooms): Pair<Boolean, String>{
+
+            try {
+                val fileRoomDB = "quartos.txt"
+                val fileRoom = File("db/$fileRoomDB")
+
+                fileRoom.writeText("")
+
+                for (room in data.roomList){
+                    fileRoom.appendText("${room.numero}|${room.preco}|${room.capacidade}|${room.sujo}|${room.estadoManutencao}|${room.disponibilidade}\n")
+                }
+
+                return Pair(true, "Dados inseridos com sucesso!")
+
+            }catch (e: Exception){
+                return Pair(false, "Erro ao inserir os dados!")
+            }
+        }
     }
 
 }

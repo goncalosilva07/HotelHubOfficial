@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Quartos Sujos</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="dirtyRoomsTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Quarto</th>
+                                <th>Sujo</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var dirtyRooms = {
+        table: null,
+        tableData: [],
+
+        getDirtyRooms: function (){
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getDirtyRooms",
+                type: "POST",
+                contentType: "application/json",
+                data: null,
+                success: function (data) {
+
+                    dirtyRooms.tableData = data;
+
+                    dirtyRooms.updateTable();
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            dirtyRooms.table.clear().rows.add(dirtyRooms.tableData).draw();
+        },
+    };
+
+    $(document).ready(function () {
+
+        dirtyRooms.getDirtyRooms();
+
+        dirtyRooms.table = $('#dirtyRoomsTable').DataTable({
+            data: dirtyRooms.tableData,
+            columns: [
+                { data: "numero" },
+                { data: "estadoLimpeza" },
+            ],
+            columnDefs: [
+                {
+                    "targets": 1,
+                    "render": function(data, type, row, meta) {
+                        if (row.sujo){
+                            return "Sim"
+                        }else{
+                            return "Não"
+                        }
+                    }
+                },
+            ],
+
+        });
+    });
+
+</script>

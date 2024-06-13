@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+
+</style>
+
+<div class="row mt-4">
+    <div class="col-lg-12 mb-lg-0 mb-4">
+        <div class="card ">
+            <div class="card-header pb-0 p-3">
+                <div class="d-flex justify-content-between">
+                    <h6 class="mb-2">Gestão de Quartos</h6>
+                </div>
+            </div>
+            <div class="card-body cardBody">
+                <div class="row">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Nº Quarto</label>
+                            <input class="form-control roomNumber" type="text" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Preço</label>
+                            <input class="form-control roomPrice" type="number" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Capacidade</label>
+                            <input class="form-control roomCapacity" type="number" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <button type="button" class="button-3 addRoom" style="height: 38.5px;">Adicionar</button>
+                    </div>
+
+                    <div class="col-md-12" style="margin-top: 20px">
+                        <table id="roomsTable" class="display" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>Nº Quarto</th>
+                                <th>Preço</th>
+                                <th>Capacidade</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <div class="col-md-2" style="margin-top: 20px">
+                        <button type="button" class="button-3 submitRooms" style="height: 38.5px; width: 100%">Finalizar</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
+
+<script>
+
+    var roomsManagement = {
+        table: null,
+        tableData: [],
+
+        getRooms: function (){
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/getRooms",
+                type: "POST",
+                contentType: "application/json",
+                data: null,
+                success: function (data) {
+                    debugger;
+                    roomsManagement.tableData = [];
+                    roomsManagement.tableData = data;
+
+                    roomsManagement.updateTable();
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+
+        updateTable: function () {
+            roomsManagement.table.clear().rows.add(roomsManagement.tableData).draw();
+        },
+
+        addRoom: function () {
+
+            var numero = $(".roomNumber").val();
+            var preco = $(".roomPrice").val();
+            var capacidade = $(".roomCapacity").val();
+
+            if (roomsManagement.tableData.find(x => x.numero == numero) == null){
+
+                var obj = {
+                    numero: numero,
+                    preco: preco,
+                    capacidade: capacidade,
+                    caracteristicas: null,
+                    sujo: false,
+                    estadoManutencao: true,
+                    disponibilidade: true
+                }
+
+                roomsManagement.tableData.push(obj);
+                roomsManagement.updateTable();
+            }else{
+                alert("Número já em utilização");
+            }
+
+
+        },
+
+        removeRoom: function (id){
+            debugger;
+            var data = roomsManagement.tableData.filter(x => x.numero != id);
+            roomsManagement.tableData = [];
+            if (data != null){
+                $.each(data, function (index, value){
+                    roomsManagement.tableData.push(value);
+                });
+            }
+            roomsManagement.updateTable();
+        },
+
+        submitRooms: function (){
+            debugger;
+
+            var rooms = [];
+
+            $.each(roomsManagement.tableData, function (index, value){
+
+                var obj = {
+                    numero: value.numero,
+                    preco: value.preco,
+                    capacidade: value.capacidade,
+                    caracteristicas: null,
+                    sujo: value.sujo,
+                    estadoManutencao: value.estadoManutencao,
+                    disponibilidade: value.disponibilidade
+                }
+
+                rooms.push(obj);
+            });
+
+            var obj = {
+                roomList: rooms
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/updateRooms",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+        },
+    };
+
+    $(document).ready(function () {
+
+        roomsManagement.getRooms();
+
+        roomsManagement.table = $('#roomsTable').DataTable({
+            data: roomsManagement.tableData,
+            columns: [
+                { data: "numero" },
+                { data: "preco" },
+                { data: "capacidade" }
+            ],
+            columnDefs: [
+                {
+                    "targets": 3,
+                    "render": function(data, type, row, meta) {
+                        return '<span class="material-symbols-outlined removeRoom" id="' + row.numero + '"> delete </span>'
+                    }
+                },
+                {
+                    "targets": 1,
+                    "render": function(data, type, row, meta) {
+                        return row.preco + '€'
+                    }
+                },
+                {
+                    "targets": 2,
+                    "render": function(data, type, row, meta) {
+                        return row.capacidade + ' pessoas'
+                    }
+                },
+            ],
+
+        });
+
+        $(".addRoom").on("click", function (e) {
+            roomsManagement.addRoom();
+        });
+
+        $(document).on('click', '.removeRoom', function(e) {
+            var id = e.target.id;
+            roomsManagement.removeRoom(id);
+        });
+
+        $(".submitRooms").on("click", function (e) {
+            roomsManagement.submitRooms();
+        });
+    });
+
+</script>

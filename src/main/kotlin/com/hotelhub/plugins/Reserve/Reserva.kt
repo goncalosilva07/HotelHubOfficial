@@ -80,7 +80,7 @@ class Reserva(
                             (roomResponse.second as Quarto).preco,
                             (roomResponse.second as Quarto).capacidade,
                             (roomResponse.second as Quarto).caracteristicas,
-                            (roomResponse.second as Quarto).estaLimpeza,
+                            (roomResponse.second as Quarto).sujo,
                             (roomResponse.second as Quarto).estadoManutencao,
                             (roomResponse.second as Quarto).disponibilidade,
                         )
@@ -157,12 +157,56 @@ class Reserva(
                             val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
                             if (todayDate <= date && todayDate >= date2){
                                 reserveSplit[6] = todayDate.toString()
+
+                                val fileRoomDB = "quartos.txt"
+                                val fileRoom = File("db/$fileRoomDB")
+
+                                var roomsList: MutableList<Quarto> = mutableListOf()
+
+                                for (room in fileRoom.readLines()){
+                                    val roomSplit = room.split("|")
+
+                                    if (roomSplit[0] == reserveSplit[2]){
+                                        roomsList.add(Quarto(roomSplit[0].toInt(), roomSplit[1].toDouble(), roomSplit[2].toInt(), mutableListOf(), true, roomSplit[4].toBoolean(), roomSplit[5].toBoolean()))
+                                    }else{
+                                        roomsList.add(Quarto(roomSplit[0].toInt(), roomSplit[1].toDouble(), roomSplit[2].toInt(), mutableListOf(), roomSplit[3].toBoolean(), roomSplit[4].toBoolean(), roomSplit[5].toBoolean()))
+                                    }
+                                }
+
+                                fileRoom.writeText("")
+
+                                for (room in roomsList){
+                                    fileRoom.appendText("${room.numero}|${room.preco}|${room.capacidade}|${room.sujo}|${room.estadoManutencao}|${room.disponibilidade}\n")
+                                }
+
                             }else if(todayDate < date2){
                                 error = true
                                 msgError = "Tentativa de check-out! A data de inicio da reserva é maior que a data de check-out."
                             }else
                             {
                                 reserveSplit[6] = todayDate.toString()
+
+                                val fileRoomDB = "quartos.txt"
+                                val fileRoom = File("db/$fileRoomDB")
+
+                                var roomsList: MutableList<Quarto> = mutableListOf()
+
+                                for (room in fileRoom.readLines()){
+                                    val roomSplit = room.split("|")
+
+                                    if (roomSplit[0] == reserveSplit[2]){
+                                        roomsList.add(Quarto(roomSplit[0].toInt(), roomSplit[1].toDouble(), roomSplit[2].toInt(), mutableListOf(), true, roomSplit[4].toBoolean(), roomSplit[5].toBoolean()))
+                                    }else{
+                                        roomsList.add(Quarto(roomSplit[0].toInt(), roomSplit[1].toDouble(), roomSplit[2].toInt(), mutableListOf(), roomSplit[3].toBoolean(), roomSplit[4].toBoolean(), roomSplit[5].toBoolean()))
+                                    }
+                                }
+
+                                fileRoom.writeText("")
+
+                                for (room in roomsList){
+                                    fileRoom.appendText("${room.numero}|${room.preco}|${room.capacidade}|${room.sujo}|${room.estadoManutencao}|${room.disponibilidade}\n")
+                                }
+
                                 error = true
                                 msgError = "Tentativa de check-out! A data da reserva é menor que a data de check-out."
                             }

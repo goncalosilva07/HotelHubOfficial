@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 38px;
+    }
+
+    .select2-selection__arrow{
+        height: 35px !important;
+    }
+</style>
+<body>
+    <div class="row mt-4">
+        <div class="col-lg-12 mb-lg-0 mb-4">
+            <div class="card ">
+                <div class="card-header pb-0 p-3">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="mb-2">Registo de Limpeza</h6>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Nº Quarto</label>
+                                <input class="form-control roomNumber" type="text" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3" style="margin-top: 33px">
+                            <button type="button" class="button-3 submitCleaningLogBtn">Concluir</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+    var cleaningLog = {
+
+        submitCleaningLog: function (){
+
+            var obj = {
+                idRoom: $(".roomNumber").val(),
+                idUser: contentHub.userInfo.user.id
+            }
+
+            $.ajax({
+                url: "http://127.0.0.1:8080/submitCleaningLog",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(obj),
+                success: function (data) {
+                    alert(data);
+                    $(".contentHubInjection").load("/dashboard");
+                },
+                error: function (data) {
+                    alert(data.responseText);
+                }
+            });
+
+        },
+    };
+
+    $(document).ready(function () {
+
+        $(".submitCleaningLogBtn").on("click", function (e) {
+            cleaningLog.submitCleaningLog();
+        });
+
+    });
+</script>

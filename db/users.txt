@@ -10,3 +10,5 @@ YGXA|contaTeste|123456|null|null|null|null|true
 LBIU|schmurro|123456|Pedro|Ferreira|pedroemanuelmacedoferreira@gmail.com|91777|true
 UJVS|goncalo7|123456|null|null|null|null|true
 HAJG|quim|123456|Quim|Silva|email@gmail.com|91842344|false
+QOXT|apresentacao|123456|null|null|null|null|true
+BKNJ|testar|123456|null|null|null|null|true
