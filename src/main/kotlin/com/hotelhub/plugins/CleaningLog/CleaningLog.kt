@@ -24,7 +24,7 @@ class CleaningLog (val userName: String,
 
                     val todayDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
 
-                    fileCleaningLog.appendText("${data.idRoom}|${data.idUser}|$todayDate")
+                    fileCleaningLog.appendText("${data.idRoom}|${data.idUser}|$todayDate\n")
 
                     val fileRoomDB = "quartos.txt"
                     val fileRoom = File("db/$fileRoomDB")

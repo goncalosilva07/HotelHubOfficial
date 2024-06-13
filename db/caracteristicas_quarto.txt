@@ -5,6 +5,5 @@
 5|Cofre
 6|Secador de cabelo
 7|Mesa de trabalho
-8|Serviço de quarto
-9|Vista para o mar
-10|Banheira
+8|Vista para o mar
+9|Banheira

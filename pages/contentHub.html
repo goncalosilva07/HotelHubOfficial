@@ -78,7 +78,7 @@
    <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
        <ul class="navbar-nav userPermissionsActivities">
            <li class="nav-item menuOption" id="0">
-               <a class="nav-link nav-link-permissions active">
+               <a class="nav-link nav-link-permissions nav-link-dashboard active">
                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                        <span class="material-symbols-outlined">dashboard</span>
                    </div>
@@ -338,15 +338,8 @@
         });
 
         $(document).on('click', '.nav-link-permissions', function(e) {
-
-            debugger;
-
            $(".nav-link-permissions.active").removeClass("active");
-
             e.target.className += " active"
-
-
-
         });
 
         $(".homeBtn").on("click", function (e) {

@@ -233,6 +233,11 @@
 
     $(document).ready(function () {
 
+        $(".changePageName").html("Dashboard");
+
+        $(".nav-link-permissions.active").removeClass("active");
+        $(".nav-link-dashboard")[0].className += " active"
+
         if (contentHub.userInfo.user.isClient){
             dashboard.getClientDashBoardInitialData();
             $(".employeeDiv").remove();
